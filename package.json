@@ -8,11 +8,18 @@
     "@testing-library/user-event": "^7.2.1",
     "antd": "^4.5.3",
     "axios": "^0.19.2",
+    "feathers-client": "^2.4.0",
     "feathers-redux": "^3.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "redux": "^4.0.5",
+    "redux-logger": "^3.0.6",
+    "redux-promise-middleware": "^6.1.2",
+    "redux-thunk": "^2.3.0",
+    "socket.io-client": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -24,16 +31,43 @@
     "extends": "react-app",
     "rules": {
       "semi": "error",
-      "indent": ["error", 2],
+      "indent": [
+        "error",
+        2
+      ],
       "no-trailing-spaces": "error",
-      "jsx-quotes": ["error", "prefer-double"],
-      "quotes": ["error", "single"],
-      "func-call-spacing": ["error", "never"],
-      "object-curly-spacing": ["error", "always"],
-      "space-before-function-paren": ["error", "never"],
-      "space-before-blocks": ["error", "always"],
-      "react/jsx-space-before-closing": ["error", "always"],
-      "react/jsx-closing-bracket-location": ["error", "tag-aligned"]
+      "jsx-quotes": [
+        "error",
+        "prefer-double"
+      ],
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "func-call-spacing": [
+        "error",
+        "never"
+      ],
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "space-before-function-paren": [
+        "error",
+        "never"
+      ],
+      "space-before-blocks": [
+        "error",
+        "always"
+      ],
+      "react/jsx-space-before-closing": [
+        "error",
+        "always"
+      ],
+      "react/jsx-closing-bracket-location": [
+        "error",
+        "tag-aligned"
+      ]
     }
   },
   "browserslist": {

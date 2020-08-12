@@ -1,9 +1,7 @@
 import React from 'react';
 import { Form, Input, Button, Row, Col, PageHeader } from 'antd';
-import { useSelector } from 'react-redux';
 
 export default function Login() {
-  const notes = useSelector((state) => state.notesReducer);
   function loginUser() {
     console.log('test');
   }
@@ -13,7 +11,6 @@ export default function Login() {
       <PageHeader title="Login" />
       <Row justify="center">
         <Col span={6}>
-          {JSON.stringify(notes)}
           <Form
             name="loginForm"
             layout="vertical"

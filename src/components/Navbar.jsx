@@ -23,7 +23,6 @@ export default function Navbar() {
     dispatch(removeUser());
   }
 
-  
   return (
     <Menu mode="horizontal" selectedKeys={[currentLocation]}>
       <Menu.Item key="home">

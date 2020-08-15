@@ -3,7 +3,6 @@ import { Menu, Button } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeUser } from '../actions/users.actions';
-import app from '../feathers-client';
 
 
 export default function Navbar() {
@@ -19,7 +18,7 @@ export default function Navbar() {
   }, [location]);
 
   function logout() {
-    app.logout();
+    // app.logout();
     dispatch(removeUser());
   }
 

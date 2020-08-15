@@ -1,16 +1,5 @@
-import feathers from '@feathersjs/client';
-import io from 'socket.io-client';
+import client from './express-client/index';
 
-const socket = io('http://localhost:3030', {
-  transports: ['websocket']
-});
-
-const app = feathers();
-
-app.configure(feathers.socketio(socket));
-
-app.configure(feathers.authentication({
-  storage: window.localStorage
-}));
+const app = client('http://localhost:5000/api');
 
 export default app;

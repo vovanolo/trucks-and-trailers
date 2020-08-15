@@ -39,6 +39,9 @@ function client(host) {
         }
       });
     },
+    reAuthenticate: function() {
+      const url = `${host}/authenticate`;
+    },
     /**
      *
      * @param {String} entity

@@ -34,7 +34,7 @@ export default function Navbar() {
       )}
       {user !== null && (
         <Menu.Item>
-          {user.user.email}
+          {user.user.username}
         </Menu.Item>
       )}
       {user !== null && (

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Router from './Router';
-// import app from './feathers-client';
 import { useDispatch } from 'react-redux';
+
 import { setUser } from './actions/users.actions';
+import app from './express-client';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -11,6 +12,7 @@ export default function App() {
     // app.reAuthenticate()
     //   .then((res) => dispatch(setUser(res)))
     //   .catch((error) => console.dir(error));
+    app.find('users').then((res) => console.log(res.data));
   }, []);
 
   return (

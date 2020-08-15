@@ -1,27 +1,28 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Row, Col, PageHeader } from 'antd';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../actions/users.actions';
 import { useHistory } from 'react-router-dom';
-// import app from '../feathers-client';
+
+import { setUser } from '../actions/users.actions';
+
+import app from '../express-client';
 
 export default function Login() {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [email, setEmail] = useState(() => '');
+  const [username, setUsername] = useState(() => '');
   const [password, setPassword] = useState(() => '');
 
   function loginUser() {
-    // app.authenticate({
-    //   strategy: 'local',
-    //   email,
-    //   password
-    // })
-    //   .then((res) => {
-    //     dispatch(setUser(res));
-    //     history.push('/');
-    //   })
-    //   .catch((error) => console.dir(error));
+    app.authenticate({
+      username,
+      password
+    })
+      .then((res) => {
+        dispatch(setUser(res));
+        history.push('/');
+      })
+      .catch((error) => console.dir(error));
   }
 
   return (
@@ -36,11 +37,11 @@ export default function Login() {
             initialValues={{ remember: true }}
           >
             <Form.Item
-              label="E-Mail"
-              name="email"
-              rules={[{ required: true, message: 'Please type in your E-Mail' }]}
+              label="Username"
+              name="username"
+              rules={[{ required: true, message: 'Please type in your Username' }]}
             >
-              <Input type="email" placeholder="E-Mail" onChange={(e) => setEmail(e.currentTarget.value)} />
+              <Input type="text" placeholder="Username" onChange={(e) => setUsername(e.currentTarget.value)} />
             </Form.Item>
 
             <Form.Item

@@ -3,7 +3,7 @@ import { Form, Input, Button, Row, Col, PageHeader } from 'antd';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../actions/users.actions';
 import { useHistory } from 'react-router-dom';
-import app from '../feathers-client';
+// import app from '../feathers-client';
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -12,16 +12,16 @@ export default function Login() {
   const [password, setPassword] = useState(() => '');
 
   function loginUser() {
-    app.authenticate({
-      strategy: 'local',
-      email,
-      password
-    })
-      .then((res) => {
-        dispatch(setUser(res));
-        history.push('/');
-      })
-      .catch((error) => console.dir(error));
+    // app.authenticate({
+    //   strategy: 'local',
+    //   email,
+    //   password
+    // })
+    //   .then((res) => {
+    //     dispatch(setUser(res));
+    //     history.push('/');
+    //   })
+    //   .catch((error) => console.dir(error));
   }
 
   return (

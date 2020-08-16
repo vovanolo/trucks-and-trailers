@@ -3,6 +3,10 @@ import { Menu, Button } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeUser } from '../actions/users.actions';
+<<<<<<< HEAD
+// import app from '../feathers-client';
+=======
+>>>>>>> 7a12c54e5521b417752149e49ef889ef0f32684a
 
 
 export default function Navbar() {
@@ -10,6 +14,8 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.usersReducer);
   const [currentLocation, setCurrentLocation] = useState(() => location);
+ 
+
 
   useEffect(() => {
     const formattedLocation = location.pathname.split('/')[1];

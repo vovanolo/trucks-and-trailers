@@ -56,6 +56,9 @@ function client(host) {
         }
       });
     },
+    logout: function() {
+      localStorage.removeItem('JWT_TOKEN');
+    },
     /**
      *
      * @param {String} entity

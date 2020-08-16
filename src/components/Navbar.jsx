@@ -9,8 +9,6 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.usersReducer);
   const [currentLocation, setCurrentLocation] = useState(() => location);
- 
-
 
   useEffect(() => {
     const formattedLocation = location.pathname.split('/')[1];

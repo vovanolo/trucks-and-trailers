@@ -1,15 +1,11 @@
 import axios from 'axios';
 
 const defaultHeaders = {
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  'Content-Type': 'application/json'
 };
 
 const authHeaders = {
-  headers: {
-    'Authorization': `Bearer ${localStorage.JWT_TOKEN}`
-  }
+  'Authorization': `Bearer ${localStorage.JWT_TOKEN}`
 };
 
 /**
@@ -25,12 +21,15 @@ function client(host) {
      */
     authenticate: function(credentials) {
       const url = `${host}/authenticate`;
-      return new Promise(async function(resolve, reject) {
+      return new Promise(async (resolve, reject) => {
         try {
           const res = await axios(url, {
             headers: defaultHeaders,
             method: 'POST',
-            data: credentials
+            data: {
+              ...credentials,
+              strategy: 'local'
+            }
           });
           localStorage.setItem('JWT_TOKEN', res.data.accessToken);
           resolve(res.data);
@@ -41,6 +40,21 @@ function client(host) {
     },
     reAuthenticate: function() {
       const url = `${host}/authenticate`;
+      return new Promise(async (resolve, reject) => {
+        try {
+          const res = await axios(url, {
+            headers: authHeaders,
+            method: 'POST',
+            data: {
+              strategy: 'JWT'
+            }
+          });
+          resolve(res.data);
+        } catch (error) {
+          localStorage.removeItem('JWT_TOKEN');
+          reject(error);
+        }
+      });
     },
     /**
      *

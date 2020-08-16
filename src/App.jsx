@@ -9,9 +9,9 @@ export default function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // app.reAuthenticate()
-    //   .then((res) => dispatch(setUser(res)))
-    //   .catch((error) => console.dir(error));
+    app.reAuthenticate()
+      .then((res) => dispatch(setUser(res)))
+      .catch((error) => console.dir(error));
     app.find('users').then((res) => console.log(res.data));
   }, []);
 

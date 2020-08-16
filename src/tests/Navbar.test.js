@@ -8,12 +8,12 @@ import Router from '../Router';
 import configureStore from '../store';
 import { setUser } from '../actions/users.actions';
 
-test('should show user email when user is authenticated', () => {
+test('should show user username when user is authenticated', () => {
   const store = configureStore();
   const user = {
     accessToken: 'sadakwodjsamdw',
     user: {
-      email: 'tester@mail.com'
+      username: 'tester'
     }
   };
   function Test() {
@@ -31,7 +31,7 @@ test('should show user email when user is authenticated', () => {
       </Router>
     </Provider>
   );
-  expect(screen.getByText('tester@mail.com')).toBeInTheDocument();
+  expect(screen.getByText('tester')).toBeInTheDocument();
 });
 
 test('should show Login link when user is\'nt authenticated', () => {

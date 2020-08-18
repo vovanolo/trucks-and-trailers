@@ -1,8 +1,6 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Route, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
-
 
 export default function ProtectedRoute({ component: Component, ...rest }) {
   const history = useHistory();
@@ -12,7 +10,7 @@ export default function ProtectedRoute({ component: Component, ...rest }) {
     if (!user) {
       history.push('/unauthorized');
     }
-  },[user]);
+  }, [user]);
 
   return (
     <Route {...rest} render={

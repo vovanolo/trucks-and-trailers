@@ -5,6 +5,7 @@ const defaultHeaders = {
 };
 
 const authHeaders = {
+  'Content-Type': 'application/json',
   'Authorization': `Bearer ${localStorage.JWT_TOKEN}`
 };
 
@@ -20,16 +21,13 @@ function client(host) {
      * @param {Object} credentials username, password
      */
     authenticate: function(credentials) {
-      const url = `${host}/authenticate`;
+      const url = `${host}/auth/authenticate`;
       return new Promise(async (resolve, reject) => {
         try {
           const res = await axios(url, {
             headers: defaultHeaders,
             method: 'POST',
-            data: {
-              ...credentials,
-              strategy: 'local'
-            }
+            data: credentials
           });
           localStorage.setItem('JWT_TOKEN', res.data.accessToken);
           resolve(res.data);
@@ -39,20 +37,22 @@ function client(host) {
       });
     },
     reAuthenticate: function() {
-      const url = `${host}/authenticate`;
+      const url = `${host}/auth/reauthenticate`;
       return new Promise(async (resolve, reject) => {
-        try {
-          const res = await axios(url, {
-            headers: authHeaders,
-            method: 'POST',
-            data: {
-              strategy: 'JWT'
-            }
-          });
-          resolve(res.data);
-        } catch (error) {
-          localStorage.removeItem('JWT_TOKEN');
-          reject(error);
+        if (!localStorage.JWT_TOKEN) {
+          reject('No token found');
+        }
+        else {
+          try {
+            const res = await axios(url, {
+              headers: authHeaders,
+              method: 'POST'
+            });
+            resolve(res.data);
+          } catch (error) {
+            localStorage.removeItem('JWT_TOKEN');
+            reject(error);
+          }
         }
       });
     },

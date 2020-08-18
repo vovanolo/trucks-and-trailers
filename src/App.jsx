@@ -12,7 +12,6 @@ export default function App() {
     app.reAuthenticate()
       .then((res) => dispatch(setUser(res)))
       .catch((error) => console.dir(error));
-    app.find('users').then((res) => console.log(res.data));
   }, []);
 
   return (

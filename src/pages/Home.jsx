@@ -1,8 +1,7 @@
 import React from 'react';
 import { PageHeader } from 'antd';
 
-export default function Home(props) {
-  console.log(props.string);
+export default function Home() {
   return (
     <PageHeader title="Home" />
   );

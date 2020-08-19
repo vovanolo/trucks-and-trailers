@@ -1,9 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Column, Tag, Space } from 'antd';
+import { Table, Tag, Space } from 'antd';
+
 import app from '../../express-client';
 
-
 export default function UsersTable() {
+  const [users, setUsers] = useState([]);
+  
+  useEffect(() => {
+    app.find('users', true)
+      .then((res) => {
+        const usersArray = res.data;
+        usersArray.map((user) => {
+          user.key = user.id;
+          return user;
+        });
+        setUsers(usersArray);
+      });
+  }, []);
+
   const columns = [
     {
       title: 'Id',
@@ -14,11 +28,18 @@ export default function UsersTable() {
       title: 'First name',
       dataIndex: 'firstName',
       key: 'firstName',
+      render: (data) => data === null ? 'Unset' : data
     },
     {
       title: 'Last name',
       dataIndex: 'lastName',
       key: 'lastName',
+      render: (data) => data === null ? 'Unset' : data
+    },
+    {
+      title: 'Username',
+      dataIndex: 'username',
+      key: 'username'
     },
     {
       title: 'Role',
@@ -45,17 +66,5 @@ export default function UsersTable() {
     },
   ];
   
-  const [users, setUsers] = useState([]);
-  useEffect(() => {
-    app.find('users', true)
-      .then((data) => {
-        const newUsers = data.data.map((user, index) => user.key = index);
-        setUsers(newUsers);
-      });
-  }, []);
-  
-  
-  return (
-    <Table columns={columns} dataSource={users !== [] && users} />  
-  );
+  return users !== [] && <Table columns={columns} dataSource={users} />;
 }

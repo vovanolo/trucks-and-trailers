@@ -38,6 +38,11 @@ export default function Navbar() {
           {user.user.username}
         </Menu.Item>
       )}
+      {user !== null && user.user.role === 'admin' && (
+        <Menu.Item>
+          <Link to="/admin">Admin</Link>
+        </Menu.Item>
+      )}
       {user !== null && (
         <Menu.Item>
           <Button onClick={logout}>Logout</Button>

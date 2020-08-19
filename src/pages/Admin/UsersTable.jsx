@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Space } from 'antd';
+import { Table, Tag, Space, Button, Row, Col } from 'antd';
 
 import app from '../../express-client';
 
@@ -11,8 +11,11 @@ export default function UsersTable() {
       .then((res) => {
         const usersArray = res.data;
         usersArray.map((user) => {
-          user.key = user.id;
-          return user;
+          const userTemp = user;
+
+          userTemp.key = userTemp.id;
+
+          return userTemp;
         });
         setUsers(usersArray);
       });
@@ -22,34 +25,50 @@ export default function UsersTable() {
     {
       title: 'Id',
       dataIndex: 'id',
-      key: 'id'
+      key: 'id',
+      sorter: (a, b) => a.id - b.id
     },
     {
       title: 'First name',
       dataIndex: 'firstName',
       key: 'firstName',
-      render: (data) => data === null ? 'Unset' : data
+      render: (data) => data === null ? 'Unset' : data,
+      sorter: (a, b) => ('' + a.firstName).localeCompare(b.firstName)
     },
     {
       title: 'Last name',
       dataIndex: 'lastName',
       key: 'lastName',
-      render: (data) => data === null ? 'Unset' : data
+      render: (data) => data === null ? 'Unset' : data,
+      sorter: (a, b) => ('' + a.lastName).localeCompare(b.lastName)
     },
     {
       title: 'Username',
       dataIndex: 'username',
-      key: 'username'
+      key: 'username',
+      sorter: (a, b) => ('' + a.username).localeCompare(b.username)
     },
     {
       title: 'Role',
       key: 'role',
       dataIndex: 'role',
+      filters: [
+        {
+          text: 'User',
+          value: 'user'
+        },
+        {
+          text: 'Admin',
+          value: 'admin'
+        }
+      ],
+      onFilter: (value, record) => record.role === value,
+      sorter: (a, b) => ('' + a.role).localeCompare(b.role),
       render: (role) => {
         let color = role === 'admin' ? 'red' : 'green';
         return (
           <Tag color={color} key={role}>
-            {role.toUpperCase()}
+            {role[0].toUpperCase() + role.slice(1)}
           </Tag>
         );
       },
@@ -59,12 +78,18 @@ export default function UsersTable() {
       key: 'action',
       render: (text, record) => (
         <Space size="middle">
-          <a>Edit {record.name}</a>
-          <a>Delete</a>
+          <Button type="link">Edit</Button>
+          <Button type="link">Delete</Button>
         </Space>
       ),
     },
   ];
   
-  return users !== [] && <Table columns={columns} dataSource={users} />;
+  return users !== [] && (
+    <Table
+      pagination={{ defaultCurrent: 1, defaultPageSize: 10, total: users.count }}
+      columns={columns}
+      dataSource={users}
+    />
+  );
 }

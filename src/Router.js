@@ -5,6 +5,7 @@ import NotFound from './pages/NotFound';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Unauthorized from './pages/Unauthorized';
+import Admin from './pages/Admin/Admin';
 
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -14,13 +15,15 @@ export default function Router() {
     <BrowserRouter>
       <Navbar />
       <Switch>
-        <ProtectedRoute exact path="/" component={Home} string={10} />
+        <ProtectedRoute exact path="/" component={Home} />
+        <ProtectedRoute path="/admin" component={Admin} adminOnly={true} />
         <Route exact path="/login">
           <Login />
         </Route>
         <Route exact path="/unauthorized">
           <Unauthorized />
         </Route>
+        
 
         <Route path="*">
           <NotFound />

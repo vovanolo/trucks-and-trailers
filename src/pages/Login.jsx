@@ -29,7 +29,7 @@ export default function Login() {
     <>
       <PageHeader title="Login" />
       <Row justify="center">
-        <Col span={6}>
+        <Col span={6} md={6} sm={16} xs={20}>
           <Form
             name="loginForm"
             layout="vertical"

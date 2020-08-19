@@ -12,7 +12,7 @@ export default function ProtectedRoute({ component: Component, adminOnly, ...res
     if ((!user || (adminOnly && user.user.role !== 'admin')) && !isLoading) {
       history.push('/unauthorized');
     }
-  }, [user]);
+  }, [isLoading]);
 
 
   return (

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { Layout } from 'antd';
 
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';

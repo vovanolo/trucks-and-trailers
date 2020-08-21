@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import Navbar from '../components/Navbar';
 import Router from '../Router';
 import configureStore from '../store';
 import { setUser } from '../actions/users.actions';
 
-test('should show user username when user is authenticated', () => {
+test('Redux should has user username after userInfo was dispatched', () => {
   const store = configureStore();
-  const user = {
+  const userInfo = {
     accessToken: 'sadakwodjsamdw',
     user: {
       username: 'tester'
@@ -18,30 +18,31 @@ test('should show user username when user is authenticated', () => {
   };
   function Test() {
     const dispatch = useDispatch();
+    const user = useSelector((state) => state.usersReducer);
+
     useEffect(() => {
-      dispatch(setUser(user));
-    }, []);
-    return null;
+      dispatch(setUser(userInfo));
+    });
+    return (
+      <span>{user !== null && user.user.username}</span>
+    );
   }
-  render(
+  const { getByText } = render(
     <Provider store={store}>
       <Test />
-      <Router>
-        <Navbar />
-      </Router>
     </Provider>
   );
-  expect(screen.getByText('tester')).toBeInTheDocument();
+  expect(getByText('tester')).toBeInTheDocument();
 });
 
 test('should show Login link when user is\'nt authenticated', () => {
   const store = configureStore();
-  render(
+  const { getByText } = render(
     <Provider store={store}>
       <Router>
         <Navbar />
       </Router>
     </Provider>
   );
-  expect(screen.getByText('Login')).toBeInTheDocument();
+  expect(getByText('Login')).toBeInTheDocument();
 });

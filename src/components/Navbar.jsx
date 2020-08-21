@@ -50,7 +50,7 @@ export default function Navbar() {
               <Menu>
                 <Menu.Item>
                   <Link to="/profile">
-                    {user.user.username}
+                    Profile
                   </Link>
                 </Menu.Item>
                 {user.user.role === 'admin' && (

@@ -3,18 +3,19 @@ import Router from './Router';
 import { useDispatch } from 'react-redux';
 
 import { setUser } from './actions/users.actions';
-import { setLoading } from './actions/loading.actions';
+import { setAuthPending } from './actions/auth.actions';
 import app from './express-client';
 
 export default function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setLoading(true));
+    dispatch(setAuthPending(true));
+
     app.reAuthenticate()
       .then((res) => dispatch(setUser(res)))
       .catch((error) => console.dir(error))
-      .finally(() => dispatch(setLoading(false)));
+      .finally(() => dispatch(setAuthPending(false)));
   }, []);
 
   return (

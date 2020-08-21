@@ -6,7 +6,7 @@ import { Spin } from 'antd';
 export default function ProtectedRoute({ component: Component, adminOnly, ...rest }) {
   const history = useHistory();
   const user = useSelector((state) => state.usersReducer);
-  const isLoading = useSelector((state) => state.loadingReducer);
+  const isLoading = useSelector((state) => state.authReducer);
 
   useEffect(() => {
     if ((!user || (adminOnly && user.user.role !== 'admin')) && !isLoading) {

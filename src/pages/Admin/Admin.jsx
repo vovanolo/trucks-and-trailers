@@ -6,6 +6,7 @@ import SignUp from './SignUp';
 
 export default function Admin() {
   const { path } = useRouteMatch();
+  
   return (
     <Switch>
       <Route exact path={path}>

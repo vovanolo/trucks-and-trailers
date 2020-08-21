@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Space, Button } from 'antd';
+import { Table, Tag, Space, Button, Empty, Row, Col, PageHeader } from 'antd';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 import app from '../../express-client';
 
 export default function UsersTable() {
   const [users, setUsers] = useState([]);
+  const { url } = useRouteMatch();
   
   useEffect(() => {
     app.find('users', true)
@@ -33,25 +35,22 @@ export default function UsersTable() {
       dataIndex: 'firstName',
       key: 'firstName',
       render: (data) => data === null ? 'Unset' : data,
-      sorter: (a, b) => ('' + a.firstName).localeCompare(b.firstName)
+      sorter: (a, b) => ('' + a.firstName).localeCompare(b.firstName),
+      responsive: ['lg']
     },
     {
       title: 'Last name',
       dataIndex: 'lastName',
       key: 'lastName',
       render: (data) => data === null ? 'Unset' : data,
-      sorter: (a, b) => ('' + a.lastName).localeCompare(b.lastName)
+      sorter: (a, b) => ('' + a.lastName).localeCompare(b.lastName),
+      responsive: ['lg']
     },
     {
       title: 'Username',
       dataIndex: 'username',
       key: 'username',
       sorter: (a, b) => ('' + a.username).localeCompare(b.username)
-    },
-    {
-      title: 'Username',
-      dataIndex: 'username',
-      key: 'username',
     },
     {
       title: 'Role',
@@ -91,10 +90,21 @@ export default function UsersTable() {
   ];
   
   return users !== [] && (
-    <Table
-      pagination={{ defaultCurrent: 1, defaultPageSize: 10, total: users.count }}
-      columns={columns}
-      dataSource={users}
-    />
+    <>
+      <PageHeader title="Admin" extra={[
+        <Button type="primary" key={0}>
+          <Link to={`${url}/addUser`}>Add new user</Link>
+        </Button>
+      ]}>
+        
+      </PageHeader>
+      
+      <Table
+        pagination={{ defaultCurrent: 1, defaultPageSize: 10, total: users.count }}
+        scroll={{ x: '100vw' }}
+        columns={columns}
+        dataSource={users}
+      />
+    </>
   );
 }

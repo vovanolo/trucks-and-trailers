@@ -5,7 +5,7 @@ const defaultHeaders = {
 };
 
 const authHeaders = {
-  'Content-Type': 'application/json',
+  ...defaultHeaders,
   'Authorization': `Bearer ${localStorage.JWT_TOKEN}`
 };
 
@@ -19,8 +19,9 @@ function client(host) {
     /**
      *
      * @param {Object} credentials username, password
+     * @returns {Promise}
      */
-    authenticate: function(credentials) {
+    authenticate: (credentials) => {
       const url = `${host}/auth/authenticate`;
       return new Promise(async (resolve, reject) => {
         try {
@@ -36,7 +37,7 @@ function client(host) {
         }
       });
     },
-    reAuthenticate: function() {
+    reAuthenticate: () => {
       const url = `${host}/auth/reauthenticate`;
       return new Promise(async (resolve, reject) => {
         if (!localStorage.JWT_TOKEN) {
@@ -56,15 +57,16 @@ function client(host) {
         }
       });
     },
-    logout: function() {
+    logout: () => {
       localStorage.removeItem('JWT_TOKEN');
     },
     /**
      *
      * @param {String} entity
      * @param {Boolean} useAuth
+     * @returns {Promise}
      */
-    find: async function(entity, useAuth) {
+    find: async (entity, useAuth) => {
       const url = `${host}/${entity}`;
       return await axios(url, {
         headers: useAuth ? authHeaders : defaultHeaders,
@@ -76,8 +78,9 @@ function client(host) {
      * @param {String} entity
      * @param {Number} id
      * @param {Boolean} useAuth
+     * @returns {Promise}
      */
-    findOne: async function(entity, id, useAuth) {
+    findOne: async (entity, id, useAuth) => {
       const url = `${host}/${entity}/${id}`;
       return await axios(url, {
         headers: useAuth ? authHeaders : defaultHeaders,
@@ -89,13 +92,42 @@ function client(host) {
      * @param {String} entity
      * @param {any} data
      * @param {Boolean} useAuth
+     * @returns {Promise}
      */
-    create: async function(entity, data, useAuth) {
+    create: async (entity, data, useAuth) => {
       const url = `${host}/${entity}`;
       return await axios(url, {
         headers: useAuth ? authHeaders : defaultHeaders,
         method: 'POST',
         data
+      });
+    },
+    /**
+     *
+     * @param {String} entity
+     * @param {any} data
+     * @param {Boolean} useAuth
+     * @returns {Promise}
+     */
+    update: async (entity, data, useAuth) => {
+      const url = `${host}/${entity}/:id`;
+      return await axios(url, {
+        headers: useAuth ? authHeaders : defaultHeaders,
+        method: 'PATCH',
+        data
+      });
+    },
+    /**
+     *
+     * @param {String} entity
+     * @param {Boolean} useAuth
+     * @returns {Promise}
+     */
+    delete: async (entity, useAuth) => {
+      const url = `${host}/${entity}/:id`;
+      return await axios(url, {
+        headers: useAuth ? authHeaders : defaultHeaders,
+        method: 'DELETE'
       });
     }
   };

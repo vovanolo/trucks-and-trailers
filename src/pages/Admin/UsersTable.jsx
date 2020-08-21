@@ -21,6 +21,11 @@ export default function UsersTable() {
       key: 'lastName',
     },
     {
+      title: 'Username',
+      dataIndex: 'username',
+      key: 'username',
+    },
+    {
       title: 'Role',
       key: 'role',
       dataIndex: 'role',
@@ -45,17 +50,24 @@ export default function UsersTable() {
     },
   ];
   
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([{
+    key: '1',
+    id: '1',
+    firstName: 'Good',
+    lastName: 'Alex',
+    username: 'alex_cherhavski',
+    role: 'admin'
+  }]);
   useEffect(() => {
-    app.find('users', true)
-      .then((data) => {
-        const newUsers = data.data.map((user, index) => user.key = index);
-        setUsers(newUsers);
-      });
+    // app.find('users', true)
+    //   .then((data) => {
+    //     const newUsers = data.data.map((user, index) => user.key = index);
+    //     setUsers(newUsers);
+    //   });
   }, []);
   
   
   return (
-    <Table columns={columns} dataSource={users !== [] && users} />  
+    <Table columns={columns} dataSource={users} />
   );
 }

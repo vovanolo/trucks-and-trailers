@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Space, Button, Row, Col } from 'antd';
+import { Table, Tag, Space, Button } from 'antd';
 
 import app from '../../express-client';
 
@@ -90,33 +90,11 @@ export default function UsersTable() {
     },
   ];
   
-<<<<<<< HEAD
-  const [users, setUsers] = useState([{
-    key: '1',
-    id: '1',
-    firstName: 'Good',
-    lastName: 'Alex',
-    username: 'alex_cherhavski',
-    role: 'admin'
-  }]);
-  useEffect(() => {
-    // app.find('users', true)
-    //   .then((data) => {
-    //     const newUsers = data.data.map((user, index) => user.key = index);
-    //     setUsers(newUsers);
-    //   });
-  }, []);
-  
-  
-  return (
-    <Table columns={columns} dataSource={users} />
-=======
   return users !== [] && (
     <Table
       pagination={{ defaultCurrent: 1, defaultPageSize: 10, total: users.count }}
       columns={columns}
       dataSource={users}
     />
->>>>>>> ff0a719abdf26f70df3948d3562879575a5fbe78
   );
 }

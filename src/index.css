@@ -1,2 +1,13 @@
 @import '~antd/dist/antd.css';
 
+.text-unselectable {
+  user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+}
+
+.avatar-btn {
+  cursor: pointer;
+}

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Button } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
+import { Menu, Button, Row, Col, Popover, Dropdown } from 'antd';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { removeUser } from '../actions/users.actions';
 import app from '../express-client';
+import Avatar from 'antd/lib/avatar/avatar';
 
 export default function Navbar() {
   const location = useLocation();
+  const history = useHistory();
   const dispatch = useDispatch();
+
   const user = useSelector((state) => state.usersReducer);
+
   const [currentLocation, setCurrentLocation] = useState(() => location);
 
   useEffect(() => {
@@ -21,33 +25,51 @@ export default function Navbar() {
   function logout() {
     app.logout();
     dispatch(removeUser());
+    history.push('/login');
   }
 
   return (
-    <Menu mode="horizontal" selectedKeys={[currentLocation]}>
-      <Menu.Item key="home">
-        <Link to="/">Home</Link>
-      </Menu.Item>
-      {user === null && (
-        <Menu.Item key="login">
-          <Link to="/login">Login</Link>
-        </Menu.Item>
-      )}
-      {user !== null && (
-        <Menu.Item>
-          {user.user.username}
-        </Menu.Item>
-      )}
-      {user !== null && user.user.role === 'admin' && (
-        <Menu.Item>
-          <Link to="/admin">Admin</Link>
-        </Menu.Item>
-      )}
-      {user !== null && (
-        <Menu.Item>
-          <Button onClick={logout}>Logout</Button>
-        </Menu.Item>
-      )}
-    </Menu>
+    <Row justify="space-between">
+      <Col>
+        {user !== null && (
+          <Menu mode="horizontal" selectedKeys={[currentLocation]}>
+            <Menu.Item key="home">
+              <Link to="/">Home</Link>
+            </Menu.Item>
+          </Menu>
+        )}
+      </Col>
+      <Col pull={1}>
+        <Menu mode="horizontal">
+          {user === null ? (
+            <Menu.Item key="login">
+              <Link to="/login">Login</Link>
+            </Menu.Item>
+          ) : (
+            <Dropdown overlay={(
+              <Menu>
+                <Menu.Item>
+                  <Link to="/profile">
+                    {user.user.username}
+                  </Link>
+                </Menu.Item>
+                {user.user.role === 'admin' && (
+                  <Menu.Item key="admin">
+                    <Link to="/admin">Admin Panel</Link>
+                  </Menu.Item>
+                )}
+                <Menu.Item>
+                  <Button onClick={logout} type="default" danger>Logout</Button>
+                </Menu.Item>
+              </Menu>
+            )}>
+              <Avatar size="default" className="text-unselectable avatar-btn">
+                {user.user.username[0].toUpperCase()}
+              </Avatar>
+            </Dropdown>
+          )}
+        </Menu>
+      </Col>
+    </Row>
   );
 }

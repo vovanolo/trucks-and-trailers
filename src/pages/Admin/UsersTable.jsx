@@ -109,6 +109,15 @@ export default function UsersTable() {
     setEditingKey('');
   };
 
+  function removeUser(id) {
+    console.log(id);
+    app.delete('users', id, true)
+      .then((res) => {
+        const filteredUsers = users.filter((user) => user.id !== id);
+        setUsers(filteredUsers);
+      });
+  }
+
   const columns = [
     {
       title: 'Id',
@@ -187,9 +196,12 @@ export default function UsersTable() {
             </Popconfirm>
           </span>
         ) : (
-          <Button type="default" disabled={editingKey !== ''} onClick={() => edit(record)}>
-            Edit
-          </Button>
+          <Space size="middle">
+            <Button type="default" disabled={editingKey !== ''} onClick={() => edit(record)}>
+              Edit
+            </Button>
+            <Button type="link" onClick={() => removeUser(record.id)} >Delete</Button>
+          </Space>
         );
       },
     },

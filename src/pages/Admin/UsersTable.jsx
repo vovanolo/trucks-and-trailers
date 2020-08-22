@@ -83,9 +83,7 @@ export default function UsersTable() {
         id: key
       };
 
-      app.update('users', rowWithId, true)
-        .then((res) => console.log(res.data))
-        .catch((error) => console.dir(error));
+      await app.update('users', rowWithId, true);
 
       const newData = [...users];
       const index = newData.findIndex(item => key === item.key);
@@ -123,7 +121,8 @@ export default function UsersTable() {
       title: 'Id',
       dataIndex: 'id',
       key: 'id',
-      sorter: (a, b) => a.id - b.id
+      sorter: (a, b) => a.id - b.id,
+      defaultSortOrder: 'ascend'
     },
     {
       title: 'First name',
@@ -200,7 +199,7 @@ export default function UsersTable() {
             <Button type="default" disabled={editingKey !== ''} onClick={() => edit(record)}>
               Edit
             </Button>
-            <Button type="link" onClick={() => removeUser(record.id)} >Delete</Button>
+            <Button type="link" onClick={() => removeUser(record.id)}>Delete</Button>
           </Space>
         );
       },
@@ -235,6 +234,7 @@ export default function UsersTable() {
       <Form form={form} component={false}>
         <Table
           pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: users.count }}
+          sor
           components={{
             body: {
               cell: EditableCell

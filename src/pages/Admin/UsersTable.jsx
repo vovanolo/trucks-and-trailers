@@ -23,6 +23,15 @@ export default function UsersTable() {
       });
   }, []);
 
+  function removeUser(id) {
+    console.log(id);
+    app.delete('users', id, true)
+      .then((res) => {
+        const filteredUsers = users.filter((user) => user.id !== id);
+        setUsers(filteredUsers);
+      });
+  }
+
   const columns = [
     {
       title: 'Id',
@@ -83,7 +92,7 @@ export default function UsersTable() {
       render: (text, record) => (
         <Space size="middle">
           <Button type="link">Edit</Button>
-          <Button type="link">Delete</Button>
+          <Button type="link" onClick={() => removeUser(record.id)} >Delete</Button>
         </Space>
       ),
     },

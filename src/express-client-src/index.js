@@ -110,7 +110,7 @@ function client(host) {
      * @returns {Promise}
      */
     update: async (entity, data, useAuth) => {
-      const url = `${host}/${entity}/:id`;
+      const url = `${host}/${entity}/${data.id}`;
       return await axios(url, {
         headers: useAuth ? authHeaders : defaultHeaders,
         method: 'PATCH',
@@ -123,8 +123,8 @@ function client(host) {
      * @param {Boolean} useAuth
      * @returns {Promise}
      */
-    delete: async (entity, useAuth) => {
-      const url = `${host}/${entity}/:id`;
+    delete: async (entity, id, useAuth) => {
+      const url = `${host}/${entity}/${id}`;
       return await axios(url, {
         headers: useAuth ? authHeaders : defaultHeaders,
         method: 'DELETE'

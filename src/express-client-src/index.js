@@ -1,12 +1,28 @@
 import axios from 'axios';
 
+let jwtToken = localStorage.getItem('JWT_TOKEN');
+
+function setJwtToken(token) {
+  jwtToken = token;
+  localStorage.setItem('JWT_TOKEN', token);
+  authHeaders = {
+    ...authHeaders,
+    'Authorization': `Bearer ${token}`
+  };
+}
+
+function removeJwtToken() {
+  jwtToken = null;
+  localStorage.removeItem('JWT_TOKEN');
+}
+
 const defaultHeaders = {
   'Content-Type': 'application/json'
 };
 
-const authHeaders = {
+let authHeaders = {
   ...defaultHeaders,
-  'Authorization': `Bearer ${localStorage.JWT_TOKEN}`
+  'Authorization': `Bearer ${jwtToken}`
 };
 
 /**
@@ -30,7 +46,7 @@ function client(host) {
             method: 'POST',
             data: credentials
           });
-          localStorage.setItem('JWT_TOKEN', res.data.accessToken);
+          setJwtToken(res.data.accessToken);
           resolve(res.data);
         } catch (error) {
           reject(error);
@@ -40,7 +56,7 @@ function client(host) {
     reAuthenticate: () => {
       const url = `${host}/auth/reauthenticate`;
       return new Promise(async (resolve, reject) => {
-        if (!localStorage.JWT_TOKEN) {
+        if (jwtToken === null) {
           reject('No token found');
         }
         else {
@@ -51,14 +67,14 @@ function client(host) {
             });
             resolve(res.data);
           } catch (error) {
-            localStorage.removeItem('JWT_TOKEN');
+            removeJwtToken();
             reject(error);
           }
         }
       });
     },
     logout: () => {
-      localStorage.removeItem('JWT_TOKEN');
+      removeJwtToken();
     },
     /**
      *

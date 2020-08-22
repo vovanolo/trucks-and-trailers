@@ -19,6 +19,7 @@ export default function Login() {
       password
     })
       .then((res) => {
+        console.log(res);
         dispatch(setUser(res));
         history.push('/');
       })

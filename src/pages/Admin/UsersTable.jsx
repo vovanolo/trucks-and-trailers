@@ -58,7 +58,8 @@ export default function UsersTable() {
           return userTemp;
         });
         setUsers(usersArray);
-      });
+      })
+      .catch((error) => console.dir(error));
   }, []);
 
   function isEditing(record) {

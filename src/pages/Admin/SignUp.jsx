@@ -74,7 +74,7 @@ export default function SignUp() {
               <Input.Password placeholder="Repeat Password" />
             </Form.Item>
 
-            <Button type="primary" htmlType="submit">Sign Up</Button>
+            <Button type="primary" htmlType="submit">Add</Button>
           </Form>
         </Col>
       </Row>

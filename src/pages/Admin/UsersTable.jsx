@@ -1,43 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Space, Button, PageHeader, InputNumber, Input, Popconfirm, Form } from 'antd';
+import { Table, Tag, Space, Button, PageHeader, Popconfirm, Form } from 'antd';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import app from '../../express-client';
 
-const EditableCell = ({
-  editing,
-  dataIndex,
-  title,
-  inputType,
-  record,
-  index,
-  children,
-  ...restProps
-}) => {
-  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{
-            margin: 0,
-          }}
-          rules={[
-            {
-              required: true,
-              message: `Please Input ${title}!`,
-            },
-          ]}
-        >
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-};
+import EditableCell from '../../components/EditableCell';
 
 export default function UsersTable() {
   const [form] = Form.useForm();
@@ -49,8 +16,7 @@ export default function UsersTable() {
   useEffect(() => {
     app.find('users', true)
       .then((res) => {
-        const usersArray = res.data;
-        usersArray.map((user) => {
+        const usersArray = res.data.map((user) => {
           const userTemp = user;
 
           userTemp.key = userTemp.id;
@@ -62,11 +28,11 @@ export default function UsersTable() {
       .catch((error) => console.dir(error));
   }, []);
 
-  function isEditing(record) {
+  function isEditingUser(record) {
     return record.key === editingKey;
   }
 
-  const edit = record => {
+  function startEditingUser(record) {
     form.setFieldsValue({
       name: '',
       age: '',
@@ -76,7 +42,7 @@ export default function UsersTable() {
     setEditingKey(record.key);
   };
 
-  const save = async (key) => {
+  async function updateUser(key) {
     try {
       const row = await form.validateFields();
       const rowWithId = {
@@ -104,7 +70,7 @@ export default function UsersTable() {
     }
   };
 
-  const cancel = () => {
+  function cancelEditingUser() {
     setEditingKey('');
   };
 
@@ -180,24 +146,24 @@ export default function UsersTable() {
       title: 'Action',
       key: 'action',
       render: (_, record) => {
-        const editable = isEditing(record);
+        const editable = isEditingUser(record);
         return editable ? (
           <span>
             <Button
-              onClick={() => save(record.key)}
+              onClick={() => updateUser(record.key)}
               style={{
                 marginRight: 8,
               }}
             >
               Save
             </Button>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+            <Popconfirm title="Sure to cancel?" onConfirm={cancelEditingUser}>
               <Button type="link">Cancel</Button>
             </Popconfirm>
           </span>
         ) : (
           <Space size="middle">
-            <Button type="default" disabled={editingKey !== ''} onClick={() => edit(record)}>
+            <Button type="default" disabled={editingKey !== ''} onClick={() => startEditingUser(record)}>
               Edit
             </Button>
             <Button type="link" onClick={() => removeUser(record.id)}>Delete</Button>
@@ -219,7 +185,7 @@ export default function UsersTable() {
         inputType: col.dataIndex === 'age' ? 'number' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
-        editing: isEditing(record),
+        editing: isEditingUser(record),
       }),
     };
   });

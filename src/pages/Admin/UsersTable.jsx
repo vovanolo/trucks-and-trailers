@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Space, Button, PageHeader, Popconfirm, Form } from 'antd';
+import { Table, Tag, Space, Button, PageHeader, Popconfirm, Form, Spin, Result, Alert } from 'antd';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import app from '../../express-client';
@@ -11,9 +11,14 @@ export default function UsersTable() {
   const [users, setUsers] = useState([]);
   const [editingKey, setEditingKey] = useState('');
 
+  const [error, setError] = useState(null);
+  const [isRequestPending, setIsRequestPending] = useState(false);
+
   const { url } = useRouteMatch();
   
   useEffect(() => {
+    setIsRequestPending(true);
+
     app.find('users', true)
       .then((res) => {
         const usersArray = res.data.map((user) => {
@@ -25,8 +30,34 @@ export default function UsersTable() {
         });
         setUsers(usersArray);
       })
-      .catch((error) => console.dir(error));
+      .catch((error) =>addErrorToState(error))
+      .finally(() => setIsRequestPending(false));
   }, []);
+
+  function addErrorToState(error) {
+    let errorDescription = '';
+    switch (error.response.data.code) {
+    case 401:
+      errorDescription = 'Check your credentials';
+      break;
+
+    case 403:
+      errorDescription = 'No access, you\'re not admin';
+      break;
+  
+    default:
+      errorDescription = 'Something went wrong, try again later or contact Administrator';
+      break;
+    }
+
+    const newError = {
+      code: error.response.data.code,
+      message: error.response.data.error,
+      description: errorDescription
+    };
+
+    setError(newError);
+  }
 
   function isEditingUser(record) {
     return record.key === editingKey;
@@ -49,6 +80,8 @@ export default function UsersTable() {
         ...row,
         id: key
       };
+      
+      setIsRequestPending(true);
 
       await app.update('users', rowWithId, true);
 
@@ -65,8 +98,10 @@ export default function UsersTable() {
         setUsers(newData);
         setEditingKey('');
       }
-    } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
+    } catch (error) {
+      addErrorToState(error);
+    } finally {
+      setIsRequestPending(false);
     }
   };
 
@@ -75,12 +110,15 @@ export default function UsersTable() {
   };
 
   function removeUser(id) {
-    console.log(id);
+    setIsRequestPending(true);
+
     app.delete('users', id, true)
-      .then((res) => {
+      .then(() => {
         const filteredUsers = users.filter((user) => user.id !== id);
         setUsers(filteredUsers);
-      });
+      })
+      .catch((error) => addErrorToState(error))
+      .finally(() => setIsRequestPending(false));
   }
 
   const columns = [
@@ -190,28 +228,43 @@ export default function UsersTable() {
     };
   });
   
-  return users !== [] && (
-    <>
+  return (
+    <Spin spinning={isRequestPending}>
       <PageHeader title="Admin" extra={[
         <Button type="primary" key={0}>
           <Link to={`${url}/addUser`}>Add new User</Link>
         </Button>
       ]} />
       
-      <Form form={form} component={false}>
-        <Table
-          pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: users.count }}
-          sor
-          components={{
-            body: {
-              cell: EditableCell
+      {users !== [] && !isRequestPending && !error ? (
+        <Form form={form} component={false}>
+          <Table
+            pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: users.count }}
+            sor
+            components={{
+              body: {
+                cell: EditableCell
+              }
+            }}
+            scroll={{ x: '100vw' }}
+            columns={mergedColumns}
+            dataSource={users}
+          />
+        </Form>
+      ) : (
+        !isRequestPending && error && (
+          <Result
+            status="error"
+            title={error.code + ': ' + error.message}
+            subTitle={error.description}
+            extra={
+              // eslint-disable-next-line no-restricted-globals
+              <Button onClick={() => location.reload()}>Refresh the page</Button>
             }
-          }}
-          scroll={{ x: '100vw' }}
-          columns={mergedColumns}
-          dataSource={users}
-        />
-      </Form>
-    </>
+          />
+        )
+      )}
+      
+    </Spin>
   );
 }

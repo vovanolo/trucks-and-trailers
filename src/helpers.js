@@ -1,24 +1,37 @@
 export function getFormattedError(error) {
   let errorDescription = '';
-  switch (error.response.data.code) {
-  case 401:
-    errorDescription = 'Check your credentials';
-    break;
+  if (error.response === undefined) {
+    errorDescription = 'Something went wrong';
 
-  case 403:
-    errorDescription = 'No access, you\'re not admin';
-    break;
+    const newError = {
+      code: 500,
+      message: 'Error',
+      description: errorDescription
+    };
 
-  default:
-    errorDescription = 'Something went wrong, try again later or contact Administrator';
-    break;
+    return newError;
   }
+  else {
+    switch (error.response.data.code) {
+    case 401:
+      errorDescription = 'Check your credentials';
+      break;
 
-  const newError = {
-    code: error.response.data.code,
-    message: error.response.data.error,
-    description: errorDescription
-  };
+    case 403:
+      errorDescription = 'No access, you\'re not admin';
+      break;
 
-  return newError;
+    default:
+      errorDescription = 'Something went wrong, try again later or contact Administrator';
+      break;
+    }
+
+    const newError = {
+      code: error.response.data.code,
+      message: error.response.data.error,
+      description: errorDescription
+    };
+
+    return newError;
+  }
 }

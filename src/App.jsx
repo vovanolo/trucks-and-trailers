@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import Router from './Router';
 import { useDispatch } from 'react-redux';
 
 import { setUser } from './actions/users.actions';
 import { setAuthPending } from './actions/auth.actions';
 import app from './express-client';
+
+import Router from './Router.jsx';
 
 export default function App() {
   const dispatch = useDispatch();

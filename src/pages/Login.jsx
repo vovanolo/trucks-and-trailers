@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Row, Col, PageHeader, Spin, Alert } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -26,28 +26,27 @@ export default function Login() {
       .then((res) => {
         console.log(res);
         dispatch(setUser(res));
+        setIsRequestPending(false);
         history.push('/');
       })
-      .catch((error) => setError(getFormattedError(error)))
-      .finally(() => setIsRequestPending(false));
+      .catch((error) => {
+        setIsRequestPending(false);
+        setError(getFormattedError(error));
+      });
   }
 
   return (
     <Spin spinning={isRequestPending}>
       <PageHeader title="Login" />
 
-      
       <Row justify="center">
         <Col span={6} md={6} sm={16} xs={20}>
           {error && 
-            <>
-              <Alert
-                type="error"
-                message={`${error.code}: ${error.message}`}
-                description={error.description}
-              />
-              <br />
-            </>
+            <Alert
+              type="error"
+              message={`${error.code}: ${error.message}`}
+              description={error.description}
+            />
           }
           <Form
             name="loginForm"

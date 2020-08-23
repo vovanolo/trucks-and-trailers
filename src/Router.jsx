@@ -23,7 +23,6 @@ export default function Router() {
         <Route exact path="/unauthorized">
           <Unauthorized />
         </Route>
-        
 
         <Route path="*">
           <NotFound />

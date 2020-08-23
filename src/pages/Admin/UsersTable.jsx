@@ -3,6 +3,7 @@ import { Table, Tag, Space, Button, PageHeader, Popconfirm, Form, Spin, Result, 
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import app from '../../express-client';
+import { getFormattedError } from '../../helpers';
 
 import EditableCell from '../../components/EditableCell';
 
@@ -30,34 +31,9 @@ export default function UsersTable() {
         });
         setUsers(usersArray);
       })
-      .catch((error) =>addErrorToState(error))
+      .catch((error) => setError(getFormattedError(error)))
       .finally(() => setIsRequestPending(false));
   }, []);
-
-  function addErrorToState(error) {
-    let errorDescription = '';
-    switch (error.response.data.code) {
-    case 401:
-      errorDescription = 'Check your credentials';
-      break;
-
-    case 403:
-      errorDescription = 'No access, you\'re not admin';
-      break;
-  
-    default:
-      errorDescription = 'Something went wrong, try again later or contact Administrator';
-      break;
-    }
-
-    const newError = {
-      code: error.response.data.code,
-      message: error.response.data.error,
-      description: errorDescription
-    };
-
-    setError(newError);
-  }
 
   function isEditingUser(record) {
     return record.key === editingKey;
@@ -99,7 +75,7 @@ export default function UsersTable() {
         setEditingKey('');
       }
     } catch (error) {
-      addErrorToState(error);
+      setError(getFormattedError(error));
     } finally {
       setIsRequestPending(false);
     }
@@ -117,7 +93,7 @@ export default function UsersTable() {
         const filteredUsers = users.filter((user) => user.id !== id);
         setUsers(filteredUsers);
       })
-      .catch((error) => addErrorToState(error))
+      .catch((error) => setError(getFormattedError(error)))
       .finally(() => setIsRequestPending(false));
   }
 
@@ -218,9 +194,9 @@ export default function UsersTable() {
 
     return {
       ...col,
-      onCell: record => ({
+      onCell: (record) => ({
         record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
+        inputType: col.dataIndex === 'role' ? 'check' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditingUser(record),
@@ -240,7 +216,6 @@ export default function UsersTable() {
         <Form form={form} component={false}>
           <Table
             pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: users.count }}
-            sor
             components={{
               body: {
                 cell: EditableCell

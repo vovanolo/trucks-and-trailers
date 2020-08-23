@@ -1,5 +1,6 @@
 import React from 'react';
-import { InputNumber, Input, Form } from 'antd';
+import { Input, Form, Switch, Checkbox, Alert, Select } from 'antd';
+import { Option } from 'antd/lib/mentions';
 
 export default function EditableCell({
   editing,
@@ -11,7 +12,12 @@ export default function EditableCell({
   children,
   ...restProps
 }) {
-  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+  const inputNode = inputType === 'check' ? (
+    <Select allowClear={false}>
+      <Select.Option key="user" value="user">user</Select.Option>
+      <Select.Option key="admin" value="admin">admin</Select.Option>
+    </Select>
+  ) : <Input />;
   return (
     <td {...restProps}>
       {editing ? (

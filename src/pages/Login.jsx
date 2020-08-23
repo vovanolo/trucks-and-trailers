@@ -41,7 +41,7 @@ export default function Login() {
 
       <Row justify="center">
         <Col span={6} md={6} sm={16} xs={20}>
-          {error && 
+          {error && !isRequestPending && 
             <Alert
               type="error"
               message={`${error.code}: ${error.message}`}

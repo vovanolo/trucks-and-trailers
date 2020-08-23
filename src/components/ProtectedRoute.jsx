@@ -17,10 +17,14 @@ export default function ProtectedRoute({ component: Component, adminOnly, ...res
 
   return (
     <Spin spinning={isLoading}>
-      <Route {...rest} render={
-        (props) => <Component {...rest} {...props} />
-      }
-      />
+      {!isLoading ? (
+        <Route {...rest} render={
+          (props) => <Component {...rest} {...props} />
+        }
+        />
+      ) : (
+        <div style={{ height: '100vh' }} />
+      )}
     </Spin>
   );
 };

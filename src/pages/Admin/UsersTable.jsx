@@ -16,23 +16,37 @@ export default function UsersTable() {
   const [isRequestPending, setIsRequestPending] = useState(false);
 
   const { url } = useRouteMatch();
+
+  let mounted = true;
   
   useEffect(() => {
+    mounted = true;
     setIsRequestPending(true);
 
     app.find('users', true)
       .then((res) => {
-        const usersArray = res.data.map((user) => {
-          const userTemp = user;
+        if (mounted) {
+          setIsRequestPending(false);
+          const usersArray = res.data.map((user) => {
+            const userTemp = user;
 
-          userTemp.key = userTemp.id;
+            userTemp.key = userTemp.id;
 
-          return userTemp;
-        });
-        setUsers(usersArray);
+            return userTemp;
+          });
+          setUsers(usersArray);
+        }
       })
-      .catch((error) => setError(getFormattedError(error)))
-      .finally(() => setIsRequestPending(false));
+      .catch((error) => {
+        if (mounted) {
+          setIsRequestPending(false);
+          setError(getFormattedError(error));
+        }
+      });
+
+    return function cleanup() {
+      mounted = false;
+    };
   }, []);
 
   function isEditingUser(record) {
@@ -61,23 +75,28 @@ export default function UsersTable() {
 
       await app.update('users', rowWithId, true);
 
-      const newData = [...users];
-      const index = newData.findIndex(item => key === item.key);
+      if (mounted) {
+        setIsRequestPending(false);
 
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        setUsers(newData);
-        setEditingKey('');
-      } else {
-        newData.push(row);
-        setUsers(newData);
-        setEditingKey('');
+        const newData = [...users];
+        const index = newData.findIndex(item => key === item.key);
+
+        if (index > -1) {
+          const item = newData[index];
+          newData.splice(index, 1, { ...item, ...row });
+          setUsers(newData);
+          setEditingKey('');
+        } else {
+          newData.push(row);
+          setUsers(newData);
+          setEditingKey('');
+        }
       }
     } catch (error) {
-      setError(getFormattedError(error));
-    } finally {
-      setIsRequestPending(false);
+      if (mounted) {
+        setIsRequestPending(false);
+        setError(getFormattedError(error));
+      }
     }
   };
 
@@ -90,11 +109,18 @@ export default function UsersTable() {
 
     app.delete('users', id, true)
       .then(() => {
-        const filteredUsers = users.filter((user) => user.id !== id);
-        setUsers(filteredUsers);
+        if (mounted) {
+          setIsRequestPending(false);
+          const filteredUsers = users.filter((user) => user.id !== id);
+          setUsers(filteredUsers);
+        }
       })
-      .catch((error) => setError(getFormattedError(error)))
-      .finally(() => setIsRequestPending(false));
+      .catch((error) => {
+        if (mounted) {
+          setIsRequestPending(false);
+          setError(getFormattedError(error));
+        }
+      });
   }
 
   const columns = [
@@ -212,7 +238,7 @@ export default function UsersTable() {
         </Button>
       ]} />
       
-      {users !== [] && !isRequestPending && !error ? (
+      {users !== [] && !error ? (
         <Form form={form} component={false}>
           <Table
             pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: users.count }}
@@ -227,7 +253,7 @@ export default function UsersTable() {
           />
         </Form>
       ) : (
-        !isRequestPending && error && (
+        error && (
           <Result
             status="error"
             title={error.code + ': ' + error.message}
@@ -239,7 +265,6 @@ export default function UsersTable() {
           />
         )
       )}
-      
     </Spin>
   );
 }

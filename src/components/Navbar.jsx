@@ -53,6 +53,11 @@ export default function Navbar() {
                     Profile
                   </Link>
                 </Menu.Item>
+                <Menu.Item>
+                  <Link to="/drivers">
+                    Drivers
+                  </Link>
+                </Menu.Item>
                 {user.user.role === 'admin' && (
                   <Menu.Item key="admin">
                     <Link to="/admin">Admin Panel</Link>

@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Unauthorized from './pages/Unauthorized';
 import Admin from './pages/Admin/Admin';
 import Drivers from './pages/Drivers';
+import AddDriver from './pages/AddDriver';
 
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -22,8 +23,8 @@ export default function Router() {
           <Login />
         </Route>
 
-        <ProtectedRoute path="/drivers" component={Drivers} />
-
+        <ProtectedRoute exact path="/drivers" component={Drivers} />
+        <ProtectedRoute exact path="/drivers/addDriver" component={AddDriver} />
 
         <Route exact path="/unauthorized">
           <Unauthorized />

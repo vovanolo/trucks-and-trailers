@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Space, Button, PageHeader, Popconfirm, Form, Spin, Result, Alert } from 'antd';
+import { Table, Tag, Space, Button, PageHeader, Popconfirm, Form, Spin, Result, Alert, Switch } from 'antd';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import app from '../express-client';
@@ -7,7 +7,7 @@ import { getFormattedError } from '../helpers';
 
 import EditableCell from '../components/EditableCell';
 
-export default function Drivers() {
+export default function DriversTable() {
   const [form] = Form.useForm();
   const [drivers, setDrivers] = useState([]);
   const [editingKey, setEditingKey] = useState('');

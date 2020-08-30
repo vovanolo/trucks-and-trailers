@@ -9,7 +9,6 @@ export default function AddDriver() {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
-  const [id, setId] = useState(0);
   const [error, setError] = useState(null);
   const [isRequestPending, setIsRequestPending] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -22,8 +21,7 @@ export default function AddDriver() {
     app.create('trailers', {
       name,
       location,
-      comment,
-      id
+      comment
     }, true)
       .then((res) => setSuccess(true))
       .catch((error) => setError(getFormattedError(error)))
@@ -99,18 +97,6 @@ export default function AddDriver() {
             >
               <Input.TextArea placeholder="Comment" onChange={(e) => {
                 setComment(e.currentTarget.value);
-                setError(null);
-              }} />
-            </Form.Item>
-
-            <Form.Item
-              label="Driver Id"
-              name="id"
-              hasFeedback
-              rules={[{ required: true, message: 'Please type driver\'s id' }]}
-            >
-              <Input type="number" placeholder="Driver id" onChange={(e) => {
-                setId(e.currentTarget.value);
                 setError(null);
               }} />
             </Form.Item>

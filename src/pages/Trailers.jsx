@@ -9,7 +9,7 @@ import EditableCell from '../components/EditableCell';
 
 export default function Trailers() {
   const [form] = Form.useForm();
-  const [drivers, setDrivers] = useState([]);
+  const [trailers, setTrailers] = useState([]);
   const [editingKey, setEditingKey] = useState('');
 
   const [error, setError] = useState(null);
@@ -34,7 +34,7 @@ export default function Trailers() {
 
             return driverTemp;
           });
-          setDrivers(driversArray);
+          setTrailers(driversArray);
         }
       })
       .catch((error) => {
@@ -49,21 +49,21 @@ export default function Trailers() {
     };
   }, []);
 
-  function isEditingDriver(record) {
+  function isEditingTrailer(record) {
     return record.key === editingKey;
   }
 
-  function startEditingDriver(record) {
+  function startEditingTrailer(record) {
     form.setFieldsValue({
       name: '',
-      age: '',
-      address: '',
+      location: '',
+      comment: '',
       ...record,
     });
     setEditingKey(record.key);
   };
 
-  async function updateDriver(key) {
+  async function updateTrailer(key) {
     try {
       const row = await form.validateFields();
       const rowWithId = {
@@ -78,17 +78,17 @@ export default function Trailers() {
       if (mounted) {
         setIsRequestPending(false);
 
-        const newData = [...drivers];
+        const newData = [...trailers];
         const index = newData.findIndex(item => key === item.key);
 
         if (index > -1) {
           const item = newData[index];
           newData.splice(index, 1, { ...item, ...row });
-          setDrivers(newData);
+          setTrailers(newData);
           setEditingKey('');
         } else {
           newData.push(row);
-          setDrivers(newData);
+          setTrailers(newData);
           setEditingKey('');
         }
       }
@@ -100,19 +100,19 @@ export default function Trailers() {
     }
   };
 
-  function cancelEditingDriver() {
+  function cancelEditingTrailer() {
     setEditingKey('');
   };
 
-  function removeDriver(id) {
+  function removeTrailer(id) {
     setIsRequestPending(true);
 
     app.delete('trailers', id, true)
       .then(() => {
         if (mounted) {
           setIsRequestPending(false);
-          const filteredDrivers = drivers.filter((driver) => driver.id !== id);
-          setDrivers(filteredDrivers);
+          const filteredTrailers = trailers.filter((trailer) => trailer.id !== id);
+          setTrailers(filteredTrailers);
         }
       })
       .catch((error) => {
@@ -157,37 +157,38 @@ export default function Trailers() {
       editable: true
     },
     {
-      title: 'driverId',
-      dataIndex: 'id',
-      key: 'id',
+      title: 'Driver ID',
+      dataIndex: 'driverId',
+      key: 'driverId',
       sorter: (a, b) => a.driverid - b.driverid,
-      editable: true
+      render: (data) => data === null ? 'Unset' : data,
+      editable: false
     },
     {
       title: 'Action',
       key: 'action',
       render: (_, record) => {
-        const editable = isEditingDriver(record);
+        const editable = isEditingTrailer(record);
         return editable ? (
           <span>
             <Button
-              onClick={() => updateDriver(record.key)}
+              onClick={() => updateTrailer(record.key)}
               style={{
                 marginRight: 8,
               }}
             >
               Save
             </Button>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancelEditingDriver}>
+            <Popconfirm title="Sure to cancel?" onConfirm={cancelEditingTrailer}>
               <Button type="link">Cancel</Button>
             </Popconfirm>
           </span>
         ) : (
           <Space size="middle">
-            <Button type="default" disabled={editingKey !== ''} onClick={() => startEditingDriver(record)}>
+            <Button type="default" disabled={editingKey !== ''} onClick={() => startEditingTrailer(record)}>
               Edit
             </Button>
-            <Button type="link" onClick={() => removeDriver(record.id)}>Delete</Button>
+            <Button type="link" onClick={() => removeTrailer(record.id)}>Delete</Button>
           </Space>
         );
       },
@@ -206,7 +207,7 @@ export default function Trailers() {
         inputType: col.dataIndex === 'rate' ? 'number' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
-        editing: isEditingDriver(record),
+        editing: isEditingTrailer(record),
       }),
     };
   });
@@ -219,10 +220,10 @@ export default function Trailers() {
         </Button>
       ]} />
       
-      {drivers !== [] && !error ? (
+      {trailers !== [] && !error ? (
         <Form form={form} component={false}>
           <Table
-            pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: drivers.count }}
+            pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: trailers.count }}
             components={{
               body: {
                 cell: EditableCell
@@ -230,7 +231,7 @@ export default function Trailers() {
             }}
             scroll={{ x: '100vw' }}
             columns={mergedColumns}
-            dataSource={drivers}
+            dataSource={trailers}
           />
         </Form>
       ) : (

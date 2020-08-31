@@ -63,6 +63,11 @@ export default function Navbar() {
                     Trailers
                   </Link>
                 </Menu.Item>
+                <Menu.Item>
+                  <Link to="/trucks">
+                    Trucks
+                  </Link>
+                </Menu.Item>
                 {user.user.role === 'admin' && (
                   <Menu.Item key="admin">
                     <Link to="/admin">Admin Panel</Link>

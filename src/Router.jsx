@@ -10,6 +10,8 @@ import Drivers from './pages/Drivers';
 import AddDriver from './pages/AddDriver';
 import Trailers from './pages/Trailers';
 import AddTrailer from './pages/AddTrailer';
+import Trucks from './pages/Trucks';
+import AddTruck from './pages/AddTruck';
 
 
 import Navbar from './components/Navbar';
@@ -29,6 +31,8 @@ export default function Router() {
         <ProtectedRoute exact path="/drivers" component={Drivers} />
         <ProtectedRoute exact path="/trailers" component={Trailers} />
         <ProtectedRoute exact path="/trailers/addTrailer" component={AddTrailer} />
+        <ProtectedRoute exact path="/trucks" component={Trucks} />
+        <ProtectedRoute exact path="/trucks/addTruck" component={AddTruck} />
         <ProtectedRoute exact path="/drivers/addDriver" component={AddDriver} />
 
         <Route exact path="/unauthorized">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Row, Col, PageHeader, Switch, Alert } from 'antd';
+import { Form, Input, Button, Row, Col, PageHeader, Select, Alert } from 'antd';
 import { useHistory, Link } from 'react-router-dom';
 
 import app from '../express-client';
@@ -9,12 +9,18 @@ export default function AddDriver() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [comment, setComment] = useState('');
+  const [trailers, setTrailers] = useState([]);
+  const [selectedTrailer, setSelectedTrailer] = useState(null);
+  const [trucks, setTrucks] = useState([]);
+  const [selectedTruck, setSelectedTruck] = useState(null);
   const [rate, setRate] = useState(0);
   const [error, setError] = useState(null);
   const [isRequestPending, setIsRequestPending] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const history = useHistory();
+  let mounted = true;
+
 
   function addDriver() {
     setIsRequestPending(true);
@@ -23,7 +29,9 @@ export default function AddDriver() {
       firstName,
       lastName,
       comment,
-      rate
+      rate,
+      trailerId: selectedTrailer ,
+      truckId: selectedTruck
     }, true)
       .then((res) => setSuccess(true))
       .catch((error) => setError(getFormattedError(error)))
@@ -31,8 +39,82 @@ export default function AddDriver() {
   }
 
   useEffect(() => {
+    mounted = true;
+    setIsRequestPending(true);
+
+    app.find('trailers', true)
+      .then((res) => {
+        if (mounted) {
+          setIsRequestPending(false);
+         
+          let filteredTrailers = res.data.filter((trail) => {
+            if(trail.driverId === null){
+              return true;
+            } else {
+              return false;
+            }
+          });
+          setTrailers(filteredTrailers);
+        }
+      })
+      .catch((error) => {
+        if (mounted) {
+          setIsRequestPending(false);
+          setError(getFormattedError(error));
+        }
+      });
+    console.log(trailers);
+
+    return function cleanup() {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    mounted = true;
+    setIsRequestPending(true);
+
+    app.find('trucks', true)
+      .then((res) => {
+        if (mounted) {
+          setIsRequestPending(false);
+         
+          let filteredTrucks = res.data.filter((trail) => {
+            if(trail.driverId === null){
+              return true;
+            } else {
+              return false;
+            }
+          });
+          setTrucks(filteredTrucks);
+        }
+      })
+      .catch((error) => {
+        if (mounted) {
+          setIsRequestPending(false);
+          setError(getFormattedError(error));
+        }
+      });
+    console.log(trailers);
+
+    return function cleanup() {
+      mounted = false;
+    };
+  }, []);
+  
+  useEffect(() => {
     setSuccess(false);
   }, [error]);
+
+
+  const onTrailerChange = value => {
+    setSelectedTrailer(value);
+    
+  };
+  const onTruckChange = value => {
+    setSelectedTruck(value);
+    
+  };
   
   return (
     <div>
@@ -114,6 +196,48 @@ export default function AddDriver() {
                 setError(null);
               }} />
             </Form.Item>
+
+            <Form.Item
+              name="trailer"
+              label="Trailer"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select a trailer"
+                onChange={onTrailerChange}
+                allowClear
+              >
+                <Select.Option value={null}></Select.Option>
+                {trailers.map((trailer)=>{
+                  return <Select.Option key={trailer.id} value={trailer.id}>{trailer.name}</Select.Option>;
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="trucks"
+              label="Trucks"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select a truck"
+                onChange={onTruckChange}
+                allowClear
+              >
+                <Select.Option value={null}></Select.Option>
+                {trucks.map((truck)=>{
+                  return <Select.Option key={truck.id} value={truck.id}>{truck.name}</Select.Option>;
+                })}
+              </Select>
+            </Form.Item>
+
 
             <Button type="primary" htmlType="submit">Add</Button>
           </Form>

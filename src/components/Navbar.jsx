@@ -54,6 +54,11 @@ export default function Navbar() {
                   </Link>
                 </Menu.Item>
                 <Menu.Item>
+                  <Link to="/board">
+                    Board
+                  </Link>
+                </Menu.Item>
+                <Menu.Item>
                   <Link to="/drivers">
                     Drivers
                   </Link>

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Input, Form, Switch, Checkbox, Alert, Select } from 'antd';
-import { Option } from 'antd/lib/mentions';
+import { Input, Form, Select } from 'antd';
 
 export default function EditableCell({
   editing,

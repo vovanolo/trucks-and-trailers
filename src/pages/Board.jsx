@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 
+import app from '../express-client';
+
 const dataSource = [
   {
     key: 1,
@@ -36,23 +38,25 @@ const mainColumns = [
 
 let dateColumns = [];
 
-let columns = [];
+// let columns = [];
 
 export default function Board() {
-  const [dates, setDates] = useState([]);
   const [week, setWeek] = useState(0);
+  const [columns, setColumns] = useState([]);
 
   useEffect(() => {
     const todayDate = new Date();
     const targetDate = new Date(todayDate);
     targetDate.setDate(targetDate.getDate() + 7 * week);
-    const newDates = [];
+
+    handleDataRequest(targetDate);
+
     dateColumns = [];
 
+    // Creating 7 columns with dates
     for (let i = 0; i < 7; i++) {
       const nextDate = new Date(targetDate);
       nextDate.setDate(nextDate.getDate() + i);
-      newDates.push(nextDate);
       dateColumns.push({
         title: nextDate.toDateString(),
         dataIndex: nextDate.toDateString(),
@@ -60,10 +64,7 @@ export default function Board() {
       });
     }
 
-    columns = [];
-    columns = [...mainColumns, ...dateColumns];
-
-    setDates(newDates);
+    setColumns([...mainColumns, ...dateColumns]);
   }, [week]);
 
   function handleWeekIncrement() {
@@ -74,10 +75,14 @@ export default function Board() {
     setWeek((prevState) => prevState - 1);
   }
 
+  function handleDataRequest(firstDate) {
+    app.find('dayInfos', true, { firstDate: firstDate });
+  }
+
   return (
     <>
       <Button onClick={handleWeekDecrement}>{'<'}</Button>
-      <span>{week}</span>
+      <span style={{ padding: '1rem' }}>{week}</span>
       <Button onClick={handleWeekIncrement}>{'>'}</Button>
       <Table columns={columns} dataSource={dataSource} pagination={false} />
     </>

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Space, Button, PageHeader, Popconfirm, Form, Spin, Result, Alert, Switch } from 'antd';
+import { Table, Space, Button, PageHeader, Popconfirm, Form, Spin, Result } from 'antd';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import app from '../express-client';
 import { getFormattedError } from '../helpers';
 
 import EditableCell from '../components/EditableCell';
+
+let mounted = true;
 
 export default function Trailers() {
   const [form] = Form.useForm();
@@ -17,8 +19,6 @@ export default function Trailers() {
 
   const { url } = useRouteMatch();
 
-  let mounted = true;
-  
   useEffect(() => {
     mounted = true;
     setIsRequestPending(true);

@@ -82,12 +82,21 @@ function client(host) {
      * @param {Boolean} useAuth
      * @returns {Promise}
      */
-    find: async (entity, useAuth) => {
+    find: async (entity, useAuth, body) => {
       const url = `${host}/${entity}`;
-      return await axios(url, {
-        headers: useAuth ? authHeaders : defaultHeaders,
-        method: 'GET'
-      });
+      if (body) {
+        return await axios(url, {
+          headers: useAuth ? authHeaders : defaultHeaders,
+          method: 'POST',
+          body
+        });
+      }
+      else {
+        return await axios(url, {
+          headers: useAuth ? authHeaders : defaultHeaders,
+          method: 'GET'
+        });
+      }
     },
     /**
      *

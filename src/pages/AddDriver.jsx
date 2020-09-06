@@ -5,6 +5,8 @@ import { useHistory, Link } from 'react-router-dom';
 import app from '../express-client';
 import { getFormattedError } from '../helpers';
 
+let mounted = true;
+
 export default function AddDriver() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -19,8 +21,6 @@ export default function AddDriver() {
   const [success, setSuccess] = useState(false);
 
   const history = useHistory();
-  let mounted = true;
-
 
   function addDriver() {
     setIsRequestPending(true);

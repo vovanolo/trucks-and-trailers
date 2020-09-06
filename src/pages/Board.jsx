@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button } from 'antd';
+import { Table, Button, Modal, Input, TimePicker, Select } from 'antd';
+import moment from 'moment';
 
 import app from '../express-client';
 
@@ -49,6 +50,28 @@ export default function Board() {
   const [week, setWeek] = useState(0);
   const [columns, setColumns] = useState([]);
   const [dataSource, setDataSource] = useState([]);
+  const [visible, setVisible] = useState(false);
+
+
+  
+
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleOk = () => {
+    // console.log(e);
+    setVisible(false);
+  };
+
+  const handleCancel = () => {
+    // console.log(e);
+    setVisible(false);
+  };
+
+
+
 
   useEffect(() => {
     const todayDate = new Date();
@@ -69,7 +92,7 @@ export default function Board() {
         key: nextDate.toDateString()
       });
       mainDataSource.forEach((col) => {
-        col[nextDate.toDateString()] = <Button>+</Button>;
+        col[nextDate.toDateString()] = <Button type="primary" shape="circle" size="middle" onClick={showModal}>+</Button>;
       });
     }
 
@@ -95,6 +118,40 @@ export default function Board() {
       <span style={{ padding: '1rem' }}>{week}</span>
       <Button onClick={handleWeekIncrement}>{'>'}</Button>
       <Table columns={columns} dataSource={dataSource} pagination={false} />
+      <Modal
+        title="Location"
+        visible={visible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <label htmlFor="">Location</label>
+        <Input placeholder="enter location" type="text"/>
+        <label htmlFor="">Time</label>
+        <TimePicker
+          defaultOpenValue={moment('00:00:00', 'HH:mm:ss')}
+        />
+        <br/>
+        <label htmlFor="">Value</label>
+        <Input placeholder="enter the value"></Input>
+        <Select
+          showSearch
+          style={{ width: 200 }}
+          placeholder="Select a person"
+          optionFilterProp="children"
+          // onChange={onChange}
+          // onFocus={onFocus}
+          // onBlur={onBlur}
+          // onSearch={onSearch}
+          filterOption={(input, option) =>
+            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          <Select.Option value="jack">OFF</Select.Option>
+          <Select.Option value="lucy">LOCAL RUN</Select.Option>
+          <Select.Option value="tom">IN TRANSIT</Select.Option>
+        </Select>
+        
+      </Modal>
     </>
   );
 }

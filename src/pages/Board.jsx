@@ -3,14 +3,21 @@ import { Table, Button } from 'antd';
 
 import app from '../express-client';
 
-const dataSource = [
+const mainDataSource = [
   {
     key: 1,
     driver: 'John',
     truck: '1',
     trailer: '3',
     comment: 'Wow'
-  }
+  },
+  {
+    key: 2,
+    driver: 'Vova',
+    truck: '7',
+    trailer: '1',
+    comment: 'Comment'
+  },
 ];
 
 const mainColumns = [
@@ -38,11 +45,10 @@ const mainColumns = [
 
 let dateColumns = [];
 
-// let columns = [];
-
 export default function Board() {
   const [week, setWeek] = useState(0);
   const [columns, setColumns] = useState([]);
+  const [dataSource, setDataSource] = useState([]);
 
   useEffect(() => {
     const todayDate = new Date();
@@ -62,9 +68,13 @@ export default function Board() {
         dataIndex: nextDate.toDateString(),
         key: nextDate.toDateString()
       });
+      mainDataSource.forEach((col) => {
+        col[nextDate.toDateString()] = <Button>+</Button>;
+      });
     }
 
     setColumns([...mainColumns, ...dateColumns]);
+    setDataSource(mainDataSource);
   }, [week]);
 
   function handleWeekIncrement() {

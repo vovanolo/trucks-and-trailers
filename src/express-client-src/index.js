@@ -88,7 +88,7 @@ function client(host) {
         return await axios(url, {
           headers: useAuth ? authHeaders : defaultHeaders,
           method: 'POST',
-          body
+          data: body
         });
       }
       else {

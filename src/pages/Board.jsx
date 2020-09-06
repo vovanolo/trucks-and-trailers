@@ -3,28 +3,11 @@ import { Table, Button } from 'antd';
 
 import app from '../express-client';
 
-const mainDataSource = [
-  {
-    key: 1,
-    driver: 'John',
-    truck: '1',
-    trailer: '3',
-    comment: 'Wow'
-  },
-  {
-    key: 2,
-    driver: 'Vova',
-    truck: '7',
-    trailer: '1',
-    comment: 'Comment'
-  },
-];
-
 const mainColumns = [
   {
     title: 'Driver',
-    dataIndex: 'driver',
-    key: 'driver'
+    dataIndex: 'firstName',
+    key: 'firstName'
   },
   {
     title: 'Truck',
@@ -66,15 +49,12 @@ export default function Board() {
       dateColumns.push({
         title: nextDate.toDateString(),
         dataIndex: nextDate.toDateString(),
-        key: nextDate.toDateString()
-      });
-      mainDataSource.forEach((col) => {
-        col[nextDate.toDateString()] = <Button>+</Button>;
+        key: nextDate.toDateString(),
+        render: (data) => data ? data : <Button>+</Button>
       });
     }
 
     setColumns([...mainColumns, ...dateColumns]);
-    setDataSource(mainDataSource);
   }, [week]);
 
   function handleWeekIncrement() {
@@ -86,7 +66,29 @@ export default function Board() {
   }
 
   function handleDataRequest(firstDate) {
-    app.find('dayInfos', true, { firstDate: firstDate });
+    app.find('dayInfos', true, { firstDate: firstDate })
+      .then((res) => {
+        const newData = formatData(res.data);
+
+        setDataSource(newData);
+      });
+  }
+
+  function formatData(data) {
+    return data.map((row) => {
+      const newDayInfos = row.DayInfos.map((dayInfo) => {
+        return {
+          [new Date(dayInfo.dateTime).toDateString()]: (
+            <Button data-day_info={dayInfo}>{dayInfo.status}</Button>
+          )
+        };
+      });
+
+      return {
+        ...row,
+        ...newDayInfos[0]
+      };
+    });
   }
 
   return (
@@ -94,7 +96,7 @@ export default function Board() {
       <Button onClick={handleWeekDecrement}>{'<'}</Button>
       <span style={{ padding: '1rem' }}>{week}</span>
       <Button onClick={handleWeekIncrement}>{'>'}</Button>
-      <Table columns={columns} dataSource={dataSource} pagination={false} />
+      <Table columns={columns} dataSource={dataSource} pagination={false} scroll={{ x: '100vw' }} />
     </>
   );
 }

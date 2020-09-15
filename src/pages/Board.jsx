@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, Input, TimePicker, Select } from 'antd';
+import { Table, Button, Modal } from 'antd';
 import moment from 'moment';
+
+import DayInfoForm from '../components/DayInfoForm';
 
 import app from '../express-client';
 
@@ -8,23 +10,23 @@ const mainColumns = [
   {
     title: 'Driver',
     dataIndex: 'firstName',
-    key: 'firstName'
+    key: 'firstName',
   },
   {
     title: 'Truck',
     dataIndex: 'truck',
-    key: 'truck'
+    key: 'truck',
   },
   {
     title: 'Trailer',
     dataIndex: 'trailer',
-    key: 'trailer'
+    key: 'trailer',
   },
   {
     title: 'Comment',
     dataIndex: 'comment',
-    key: 'comment'
-  }
+    key: 'comment',
+  },
 ];
 
 let dateColumns = [];
@@ -35,6 +37,8 @@ export default function Board() {
   const [columns, setColumns] = useState([]);
   const [dataSource, setDataSource] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [driverId, setDriverId] = useState(null);
+  const [date, setDate] = useState(null);
 
   useEffect(() => {
     const todayDate = new Date();
@@ -52,18 +56,21 @@ export default function Board() {
         title: nextDate.toDateString(),
         dataIndex: nextDate.toDateString(),
         key: nextDate.toDateString(),
-        render: (data, record) => data ? data : (
-          <Button
-            type="primary"
-            shape="circle"
-            size="middle"
-            onClick={showModal}
-            data-date={nextDate.toDateString()}
-            data-record={JSON.stringify(record)}
-          >
-            +
-          </Button>
-        )
+        render: (data, record) =>
+          data ? (
+            data
+          ) : (
+            <Button
+              type="primary"
+              shape="circle"
+              size="middle"
+              onClick={showModal}
+              data-date={nextDate.toDateString()}
+              data-record={JSON.stringify(record)}
+            >
+              +
+            </Button>
+          ),
       });
 
       dates.push(nextDate.toDateString());
@@ -76,21 +83,36 @@ export default function Board() {
     handleDataRequest();
   }, [columns]);
 
+  useEffect(() => {
+    if (driverId && date) {
+      setModalVisible(true);
+    }
+  }, [driverId, date]);
+
   function showModal(e) {
     const data = e.currentTarget.dataset;
-    const driverId = JSON.parse(data.record).id;
+
+    const { id: driverId } = JSON.parse(data.record);
     const date = data.date;
-    console.log(`Driver ID: ${driverId}, date: ${date}`);
-    setModalVisible(true);
-  };
+
+    setDriverId(driverId);
+    setDate(date);
+  }
+
+  function closeModal() {
+    setDriverId(null);
+    setDate(null);
+    setModalVisible(false);
+  }
 
   function handleOk() {
-    setModalVisible(false);
-  };
+    console.log(`Driver ID: ${driverId}, date: ${date}`);
+    closeModal();
+  }
 
   function handleCancel() {
-    setModalVisible(false);
-  };
+    closeModal();
+  }
 
   function handleWeekIncrement() {
     setWeek((prevState) => prevState + 1);
@@ -101,12 +123,21 @@ export default function Board() {
   }
 
   function handleDataRequest() {
-    app.find('dayInfos', true, { dates })
-      .then((res) => {
-        const newData = formatData(res.data);
+    app.find('dayInfos', true, { dates }).then((res) => {
+      const newData = formatData(res.data);
 
-        setDataSource(newData);
-      });
+      setDataSource(newData);
+    });
+  }
+
+  function handleAddDayInfo(values) {
+    const requestBody = {
+      ...values,
+      time: moment(values.time).format('LTS'),
+      driverId,
+    };
+
+    console.log(requestBody);
   }
 
   function formatData(data) {
@@ -115,14 +146,14 @@ export default function Board() {
         return {
           [dayInfo.date]: (
             <Button data-day_info={dayInfo}>{dayInfo.status}</Button>
-          )
+          ),
         };
       });
 
       return {
         key: row.id,
         ...row,
-        ...newDayInfos[0]
+        ...newDayInfos[0],
       };
     });
   }
@@ -133,42 +164,21 @@ export default function Board() {
       <span style={{ padding: '1rem' }}>{week}</span>
       <Button onClick={handleWeekIncrement}>{'>'}</Button>
 
-      <Table columns={columns} dataSource={dataSource} pagination={false} scroll={{ x: '100vw' }} />
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        pagination={false}
+        scroll={{ x: '100vw' }}
+      />
 
       <Modal
         title="Location"
         visible={modalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
+        destroyOnClose
       >
-        <label htmlFor="locationInput">Location</label>
-        <Input id="locationInput" placeholder="Enter location" type="text" />
-        <label htmlFor="timeInput">Time</label>
-        <TimePicker
-          id="timeInput"
-          default={moment('00:00:00', 'HH:mm:ss')}
-        />
-        <br/>
-        <label htmlFor="valueInput">Value</label>
-        <Input id="valueInput" placeholder="Enter the value" type="number" />
-        <Select
-          showSearch
-          style={{ width: 200 }}
-          placeholder="Select status"
-          optionFilterProp="children"
-          // onChange={onChange}
-          // onFocus={onFocus}
-          // onBlur={onBlur}
-          // onSearch={onSearch}
-          filterOption={(input, option) =>
-            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          <Select.Option value="off">OFF</Select.Option>
-          <Select.Option value="local run">LOCAL RUN</Select.Option>
-          <Select.Option value="in transit">IN TRANSIT</Select.Option>
-        </Select>
-        
+        <DayInfoForm onSubmit={handleAddDayInfo} />
       </Modal>
     </>
   );

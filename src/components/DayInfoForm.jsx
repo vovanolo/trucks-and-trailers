@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Input, TimePicker, Select, Button } from 'antd';
 import moment from 'moment';
 
-export default function DayInfoForm({ onSubmit }) {
+export default function AddDayInfoForm({ onSubmit }) {
   return (
     <Form
       onFinish={onSubmit}
@@ -61,8 +61,8 @@ export default function DayInfoForm({ onSubmit }) {
       >
         <Select placeholder="Choose status">
           <Select.Option value="off">Off</Select.Option>
-          <Select.Option value="local run">Local Run</Select.Option>
-          <Select.Option value="in transit">In Transit</Select.Option>
+          <Select.Option value="localRun">Local Run</Select.Option>
+          <Select.Option value="inTransit">In Transit</Select.Option>
         </Select>
       </Form.Item>
 

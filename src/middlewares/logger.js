@@ -1,4 +1,4 @@
-const logger = store => next => action => {
+const logger = (store) => (next) => (action) => {
   console.groupCollapsed(action.type); // eslint-disable-line no-console
   console.info('dispatching', action); // eslint-disable-line no-console
   const result = next(action);

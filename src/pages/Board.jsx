@@ -58,7 +58,15 @@ export default function Board() {
         key: nextDate.toDateString(),
         render: (data, record) =>
           data ? (
-            data
+            <Button
+              type="default"
+              size="middle"
+              onClick={showModal}
+              data-date={nextDate.toDateString()}
+              data-record={JSON.stringify(record)}
+            >
+              {data.status}
+            </Button>
           ) : (
             <Button
               type="primary"
@@ -80,7 +88,12 @@ export default function Board() {
   }, [week]);
 
   useEffect(() => {
-    handleDataRequest();
+    app.find('dayInfos/all', true, { dates }).then((res) => {
+      console.log(res.data);
+      const newData = formatData(res.data);
+
+      setDataSource(newData);
+    });
   }, [columns]);
 
   useEffect(() => {
@@ -122,40 +135,41 @@ export default function Board() {
     setWeek((prevState) => prevState - 1);
   }
 
-  function handleDataRequest() {
-    app.find('dayInfos', true, { dates }).then((res) => {
-      const newData = formatData(res.data);
-
-      setDataSource(newData);
-    });
-  }
-
   function handleAddDayInfo(values) {
     const requestBody = {
       ...values,
       time: moment(values.time).format('LTS'),
       driverId,
+      date,
     };
 
-    console.log(requestBody);
+    app.create('dayInfos', requestBody, true).then((res) => {
+      console.log(res.data);
+      // const newData = formatData(res.data);
+
+      // setDataSource(newData);
+    });
   }
 
   function formatData(data) {
-    return data.map((row) => {
-      const newDayInfos = row.DayInfos.map((dayInfo) => {
+    const newData = data.map((row) => {
+      const newDayInfos = row.DayInfos.reduce((newDayInfos, dayInfo) => {
         return {
-          [dayInfo.date]: (
-            <Button data-day_info={dayInfo}>{dayInfo.status}</Button>
-          ),
+          ...newDayInfos,
+          [dayInfo.date]: dayInfo,
         };
-      });
+      }, {});
 
       return {
         key: row.id,
         ...row,
-        ...newDayInfos[0],
+        ...newDayInfos,
       };
     });
+
+    console.log(newData);
+
+    return newData;
   }
 
   return (

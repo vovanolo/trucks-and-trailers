@@ -13,13 +13,12 @@ export default function App() {
   useEffect(() => {
     dispatch(setAuthPending(true));
 
-    app.reAuthenticate()
+    app
+      .reAuthenticate()
       .then((res) => dispatch(setUser(res)))
       .catch((error) => console.dir(error))
       .finally(() => dispatch(setAuthPending(false)));
-  }, []);
+  }, [dispatch]);
 
-  return (
-    <Router />
-  );
+  return <Router />;
 }

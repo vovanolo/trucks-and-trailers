@@ -25,14 +25,19 @@ export default function AddDriver() {
   function addDriver() {
     setIsRequestPending(true);
 
-    app.create('drivers', {
-      firstName,
-      lastName,
-      comment,
-      rate,
-      trailerId: selectedTrailer ,
-      truckId: selectedTruck
-    }, true)
+    app
+      .create(
+        'drivers',
+        {
+          firstName,
+          lastName,
+          comment,
+          rate,
+          trailerId: selectedTrailer,
+          truckId: selectedTruck,
+        },
+        true
+      )
       .then((res) => setSuccess(true))
       .catch((error) => setError(getFormattedError(error)))
       .finally(() => setIsRequestPending(false));
@@ -42,13 +47,14 @@ export default function AddDriver() {
     mounted = true;
     setIsRequestPending(true);
 
-    app.find('trailers', true)
+    app
+      .find('trailers', true)
       .then((res) => {
         if (mounted) {
           setIsRequestPending(false);
-         
+
           let filteredTrailers = res.data.filter((trail) => {
-            if(trail.driverId === null){
+            if (trail.driverId === null) {
               return true;
             } else {
               return false;
@@ -63,7 +69,6 @@ export default function AddDriver() {
           setError(getFormattedError(error));
         }
       });
-    console.log(trailers);
 
     return function cleanup() {
       mounted = false;
@@ -74,13 +79,14 @@ export default function AddDriver() {
     mounted = true;
     setIsRequestPending(true);
 
-    app.find('trucks', true)
+    app
+      .find('trucks', true)
       .then((res) => {
         if (mounted) {
           setIsRequestPending(false);
-         
+
           let filteredTrucks = res.data.filter((trail) => {
-            if(trail.driverId === null){
+            if (trail.driverId === null) {
               return true;
             } else {
               return false;
@@ -95,54 +101,48 @@ export default function AddDriver() {
           setError(getFormattedError(error));
         }
       });
-    console.log(trailers);
 
     return function cleanup() {
       mounted = false;
     };
   }, []);
-  
+
   useEffect(() => {
     setSuccess(false);
   }, [error]);
 
-
-  const onTrailerChange = value => {
+  const onTrailerChange = (value) => {
     setSelectedTrailer(value);
-    
   };
-  const onTruckChange = value => {
+  const onTruckChange = (value) => {
     setSelectedTruck(value);
-    
   };
-  
+
   return (
     <div>
-      <PageHeader
-        title="Add new Driver"
-        onBack={() => history.goBack()}
-      />
+      <PageHeader title="Add new Driver" onBack={() => history.goBack()} />
       <Row justify="center">
         <Col span={6} md={6} sm={16} xs={20}>
-          {!isRequestPending && (
-            error ? (
+          {!isRequestPending &&
+            (error ? (
               <Alert
                 type="error"
                 message={`${error.code}: ${error.message}`}
                 description={error.description}
               />
-            ) : success && (
-              <Alert
-                type="success"
-                message="Driver added successfully"
-                description={
-                  <Button type="link">
-                    <Link to="/drivers">View all Drivers</Link>
-                  </Button>
-                }
-              />
-            )
-          )}
+            ) : (
+              success && (
+                <Alert
+                  type="success"
+                  message="Driver added successfully"
+                  description={
+                    <Button type="link">
+                      <Link to="/drivers">View all Drivers</Link>
+                    </Button>
+                  }
+                />
+              )
+            ))}
           <Form
             name="addDriverForm"
             layout="vertical"
@@ -153,24 +153,36 @@ export default function AddDriver() {
               label="First Name"
               name="firstName"
               hasFeedback
-              rules={[{ required: true, message: 'Please type driver\'s First Name' }]}
+              rules={[
+                { required: true, message: "Please type driver's First Name" },
+              ]}
             >
-              <Input type="text" placeholder="FirstName" onChange={(e) => {
-                setFirstName(e.currentTarget.value);
-                setError(null);
-              }} />
+              <Input
+                type="text"
+                placeholder="FirstName"
+                onChange={(e) => {
+                  setFirstName(e.currentTarget.value);
+                  setError(null);
+                }}
+              />
             </Form.Item>
 
             <Form.Item
               label="Last Name"
               name="lastName"
               hasFeedback
-              rules={[{ required: true, message: 'Please type driver\'s Last Name' }]}
+              rules={[
+                { required: true, message: "Please type driver's Last Name" },
+              ]}
             >
-              <Input type="text" placeholder="LastName" onChange={(e) => {
-                setLastName(e.currentTarget.value);
-                setError(null);
-              }} />
+              <Input
+                type="text"
+                placeholder="LastName"
+                onChange={(e) => {
+                  setLastName(e.currentTarget.value);
+                  setError(null);
+                }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -179,22 +191,29 @@ export default function AddDriver() {
               hasFeedback
               rules={[{ required: true, message: 'Please type in comment' }]}
             >
-              <Input.TextArea placeholder="Comment" onChange={(e) => {
-                setComment(e.currentTarget.value);
-                setError(null);
-              }} />
+              <Input.TextArea
+                placeholder="Comment"
+                onChange={(e) => {
+                  setComment(e.currentTarget.value);
+                  setError(null);
+                }}
+              />
             </Form.Item>
 
             <Form.Item
               label="Rate"
               name="rate"
               hasFeedback
-              rules={[{ required: true, message: 'Please type driver\'s rate' }]}
+              rules={[{ required: true, message: "Please type driver's rate" }]}
             >
-              <Input type="number" placeholder="Rate" onChange={(e) => {
-                setRate(e.currentTarget.value);
-                setError(null);
-              }} />
+              <Input
+                type="number"
+                placeholder="Rate"
+                onChange={(e) => {
+                  setRate(e.currentTarget.value);
+                  setError(null);
+                }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -212,8 +231,12 @@ export default function AddDriver() {
                 allowClear
               >
                 <Select.Option value={null}></Select.Option>
-                {trailers.map((trailer)=>{
-                  return <Select.Option key={trailer.id} value={trailer.id}>{trailer.name}</Select.Option>;
+                {trailers.map((trailer) => {
+                  return (
+                    <Select.Option key={trailer.id} value={trailer.id}>
+                      {trailer.name}
+                    </Select.Option>
+                  );
                 })}
               </Select>
             </Form.Item>
@@ -232,14 +255,19 @@ export default function AddDriver() {
                 allowClear
               >
                 <Select.Option value={null}></Select.Option>
-                {trucks.map((truck)=>{
-                  return <Select.Option key={truck.id} value={truck.id}>{truck.name}</Select.Option>;
+                {trucks.map((truck) => {
+                  return (
+                    <Select.Option key={truck.id} value={truck.id}>
+                      {truck.name}
+                    </Select.Option>
+                  );
                 })}
               </Select>
             </Form.Item>
 
-
-            <Button type="primary" htmlType="submit">Add</Button>
+            <Button type="primary" htmlType="submit">
+              Add
+            </Button>
           </Form>
         </Col>
       </Row>

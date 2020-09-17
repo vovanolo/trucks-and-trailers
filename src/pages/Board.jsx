@@ -89,7 +89,6 @@ export default function Board() {
 
   useEffect(() => {
     app.find('dayInfos/all', true, { dates }).then((res) => {
-      console.log(res.data);
       const newData = formatData(res.data);
 
       setDataSource(newData);
@@ -145,9 +144,18 @@ export default function Board() {
 
     app.create('dayInfos', requestBody, true).then((res) => {
       console.log(res.data);
-      // const newData = formatData(res.data);
+      setDataSource((prevState) => {
+        return prevState.map((row) => {
+          if (row.id === res.data.driverId) {
+            return {
+              ...row,
+              [res.data.date]: res.data,
+            };
+          }
 
-      // setDataSource(newData);
+          return row;
+        });
+      });
     });
   }
 
@@ -166,8 +174,6 @@ export default function Board() {
         ...newDayInfos,
       };
     });
-
-    console.log(newData);
 
     return newData;
   }

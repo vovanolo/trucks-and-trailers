@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal } from 'antd';
-import moment from 'moment';
 
 import DayInfoForm from '../components/DayInfoForm';
 
@@ -39,6 +38,7 @@ export default function Board() {
   const [modalVisible, setModalVisible] = useState(false);
   const [driverId, setDriverId] = useState(null);
   const [date, setDate] = useState(null);
+  const [modalData, setModalData] = useState(null);
 
   useEffect(() => {
     const todayDate = new Date();
@@ -63,7 +63,7 @@ export default function Board() {
               size="middle"
               onClick={showModal}
               data-date={nextDate.toDateString()}
-              data-record={JSON.stringify(record)}
+              data-data={JSON.stringify(data)}
             >
               {data.status}
             </Button>
@@ -74,7 +74,7 @@ export default function Board() {
               size="middle"
               onClick={showModal}
               data-date={nextDate.toDateString()}
-              data-record={JSON.stringify(record)}
+              data-driverid={record.id}
             >
               +
             </Button>
@@ -95,23 +95,21 @@ export default function Board() {
     });
   }, [columns]);
 
-  useEffect(() => {
-    if (driverId && date) {
-      setModalVisible(true);
-    }
-  }, [driverId, date]);
-
   function showModal(e) {
     const data = e.currentTarget.dataset;
 
-    const { id: driverId } = JSON.parse(data.record);
-    const date = data.date;
+    if (data.data) {
+      setModalData(JSON.parse(data.data));
+    } else if (data.driverid) {
+      setDriverId(data.driverid);
+      setDate(data.date);
+    }
 
-    setDriverId(driverId);
-    setDate(date);
+    setModalVisible(true);
   }
 
   function closeModal() {
+    setModalData(null);
     setDriverId(null);
     setDate(null);
     setModalVisible(false);
@@ -137,13 +135,11 @@ export default function Board() {
   function handleAddDayInfo(values) {
     const requestBody = {
       ...values,
-      time: moment(values.time).format('LTS'),
       driverId,
       date,
     };
 
     app.create('dayInfos', requestBody, true).then((res) => {
-      console.log(res.data);
       setDataSource((prevState) => {
         return prevState.map((row) => {
           if (row.id === res.data.driverId) {
@@ -156,6 +152,8 @@ export default function Board() {
           return row;
         });
       });
+
+      closeModal();
     });
   }
 
@@ -196,9 +194,10 @@ export default function Board() {
         visible={modalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
+        footer={null}
         destroyOnClose
       >
-        <DayInfoForm onSubmit={handleAddDayInfo} />
+        <DayInfoForm onSubmit={handleAddDayInfo} dayInfoData={modalData} />
       </Modal>
     </>
   );

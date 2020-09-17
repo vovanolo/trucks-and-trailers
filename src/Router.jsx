@@ -30,7 +30,11 @@ export default function Router() {
 
         <ProtectedRoute exact path="/drivers" component={Drivers} />
         <ProtectedRoute exact path="/trailers" component={Trailers} />
-        <ProtectedRoute exact path="/trailers/addTrailer" component={AddTrailer} />
+        <ProtectedRoute
+          exact
+          path="/trailers/addTrailer"
+          component={AddTrailer}
+        />
         <ProtectedRoute exact path="/trucks" component={Trucks} />
         <ProtectedRoute exact path="/trucks/addTruck" component={AddTruck} />
         <ProtectedRoute exact path="/drivers/addDriver" component={AddDriver} />

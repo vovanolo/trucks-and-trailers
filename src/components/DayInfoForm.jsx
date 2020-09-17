@@ -1,13 +1,15 @@
 import React from 'react';
-import { Form, Input, TimePicker, Select, Button } from 'antd';
+import { Form, Input, Select, Button } from 'antd';
 import moment from 'moment';
+import InputMask from 'react-input-mask';
 
-export default function AddDayInfoForm({ onSubmit }) {
+function DayInfoForm({ onSubmit, dayInfoData }) {
   return (
     <Form
       onFinish={onSubmit}
       initialValues={{
-        time: moment(),
+        time: moment().local(true).format('HH:mm'),
+        ...dayInfoData,
       }}
     >
       <Form.Item
@@ -33,7 +35,11 @@ export default function AddDayInfoForm({ onSubmit }) {
           },
         ]}
       >
-        <TimePicker placeholder="Choose time" />
+        <InputMask mask="99:99">
+          {(inputProps) => (
+            <Input {...inputProps} type="text" placeholder="Enter time" />
+          )}
+        </InputMask>
       </Form.Item>
 
       <Form.Item
@@ -74,3 +80,9 @@ export default function AddDayInfoForm({ onSubmit }) {
     </Form>
   );
 }
+
+DayInfoForm.defaultProps = {
+  dayInfoData: {},
+};
+
+export default DayInfoForm;

@@ -157,6 +157,15 @@ export default function Board() {
     });
   }
 
+  function handleEditDayInfo(values) {
+    app
+      .update('dayInfos', { ...values, id: modalData.id }, true)
+      .then((res) => {
+        // TODO: Edit corresponding object in state
+        console.log(res);
+      });
+  }
+
   function formatData(data) {
     const newData = data.map((row) => {
       const newDayInfos = row.DayInfos.reduce((newDayInfos, dayInfo) => {
@@ -197,7 +206,10 @@ export default function Board() {
         footer={null}
         destroyOnClose
       >
-        <DayInfoForm onSubmit={handleAddDayInfo} dayInfoData={modalData} />
+        <DayInfoForm
+          onSubmit={modalData ? handleEditDayInfo : handleAddDayInfo}
+          dayInfoData={modalData}
+        />
       </Modal>
     </>
   );

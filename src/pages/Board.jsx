@@ -161,8 +161,18 @@ export default function Board() {
     app
       .update('dayInfos', { ...values, id: modalData.id }, true)
       .then((res) => {
-        // TODO: Edit corresponding object in state
-        console.log(res);
+        setDataSource((prevState) => {
+          return prevState.map((row) => {
+            if (row.id === res.data.driverId) {
+              return {
+                ...row,
+                [res.data.date]: res.data,
+              };
+            }
+
+            return row;
+          });
+        });
       });
   }
 

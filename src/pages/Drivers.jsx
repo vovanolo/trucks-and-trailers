@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Space, Button, PageHeader, Popconfirm, Form, Spin, Result } from 'antd';
+import { Table, Space, Button, PageHeader, Spin, Result } from 'antd';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import app from '../express-client';
 import { getFormattedError } from '../helpers';
 
-import EditableCell from '../components/EditableCell';
+import Modal from 'antd/lib/modal/Modal';
+import DriverForm from '../components/DriverForm';
 
 let mounted = true;
 
 export default function DriversTable() {
-  const [form] = Form.useForm();
   const [drivers, setDrivers] = useState([]);
-  const [editingKey, setEditingKey] = useState('');
-
   const [error, setError] = useState(null);
   const [isRequestPending, setIsRequestPending] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [driverId, setDriverId] = useState(null);
+  const [editedDriver, setEditedDriver] = useState(null);
 
   const { url } = useRouteMatch();
 
@@ -23,7 +24,8 @@ export default function DriversTable() {
     mounted = true;
     setIsRequestPending(true);
 
-    app.find('drivers', true)
+    app
+      .find('drivers', true)
       .then((res) => {
         if (mounted) {
           setIsRequestPending(false);
@@ -49,65 +51,126 @@ export default function DriversTable() {
     };
   }, []);
 
-  function isEditingDriver(record) {
-    return record.key === editingKey;
+  const columns = [
+    {
+      title: 'Id',
+      dataIndex: 'id',
+      key: 'id',
+      sorter: (a, b) => a.id - b.id,
+      defaultSortOrder: 'ascend',
+    },
+    {
+      title: 'First name',
+      dataIndex: 'firstName',
+      key: 'firstName',
+      render: (data) => (data === null ? 'Unset' : data),
+      sorter: (a, b) => ('' + a.firstName).localeCompare(b.firstName),
+      responsive: ['lg'],
+      editable: true,
+    },
+    {
+      title: 'Last name',
+      dataIndex: 'lastName',
+      key: 'lastName',
+      render: (data) => (data === null ? 'Unset' : data),
+      sorter: (a, b) => ('' + a.lastName).localeCompare(b.lastName),
+      responsive: ['lg'],
+      editable: true,
+    },
+    {
+      title: 'Comment',
+      dataIndex: 'comment',
+      key: 'comment',
+      sorter: (a, b) => a.comment.length - b.comment.length,
+      editable: true,
+    },
+    {
+      title: 'Rate',
+      dataIndex: 'rate',
+      key: 'rate',
+      sorter: (a, b) => a.comment - b.comment,
+      editable: true,
+    },
+    {
+      title: 'Truck',
+      dataIndex: 'Truck',
+      key: 'Truck',
+      render: (data) => (data ? data.name : 'Empty'),
+    },
+    {
+      title: 'Trailer',
+      dataIndex: 'Trailer',
+      key: 'Trailer',
+      render: (data) => (data ? data.name : 'Empty'),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle">
+          <Button type="default" onClick={() => openModal(record)}>
+            Edit
+          </Button>
+          <Button type="link" onClick={() => removeDriver(record.id)}>
+            Delete
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  function openModal(driver) {
+    setModalVisible(true);
+    setDriverId(driver.id);
+    setEditedDriver(driver);
   }
 
-  function startEditingDriver(record) {
-    form.setFieldsValue({
-      name: '',
-      age: '',
-      address: '',
-      ...record,
-    });
-    setEditingKey(record.key);
-  };
+  function closeModal() {
+    setModalVisible(false);
+    setDriverId(null);
+    setEditedDriver(null);
+  }
 
-  async function updateDriver(key) {
-    try {
-      const row = await form.validateFields();
-      const rowWithId = {
-        ...row,
-        id: key
-      };
-      
-      setIsRequestPending(true);
+  // async function updateDriver(key) {
+  //   try {
+  //     const row = await form.validateFields();
+  //     const rowWithId = {
+  //       ...row,
+  //       id: key,
+  //     };
 
-      await app.update('drivers', rowWithId, true);
+  //     setIsRequestPending(true);
 
-      if (mounted) {
-        setIsRequestPending(false);
+  //     await app.update('drivers', rowWithId, true);
 
-        const newData = [...drivers];
-        const index = newData.findIndex(item => key === item.key);
+  //     if (mounted) {
+  //       setIsRequestPending(false);
 
-        if (index > -1) {
-          const item = newData[index];
-          newData.splice(index, 1, { ...item, ...row });
-          setDrivers(newData);
-          setEditingKey('');
-        } else {
-          newData.push(row);
-          setDrivers(newData);
-          setEditingKey('');
-        }
-      }
-    } catch (error) {
-      if (mounted) {
-        setIsRequestPending(false);
-        setError(getFormattedError(error));
-      }
-    }
-  };
+  //       const newData = [...drivers];
+  //       const index = newData.findIndex((item) => key === item.key);
 
-  function cancelEditingDriver() {
-    setEditingKey('');
-  };
+  //       if (index > -1) {
+  //         const item = newData[index];
+  //         newData.splice(index, 1, { ...item, ...row });
+  //         setDrivers(newData);
+  //       } else {
+  //         newData.push(row);
+  //         setDrivers(newData);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     if (mounted) {
+  //       setIsRequestPending(false);
+  //       setError(getFormattedError(error));
+  //     }
+  //   }
+  // }
 
   function removeDriver(id) {
     setIsRequestPending(true);
 
-    app.delete('drivers', id, true)
+    app
+      .delete('drivers', id, true)
       .then(() => {
         if (mounted) {
           setIsRequestPending(false);
@@ -123,116 +186,54 @@ export default function DriversTable() {
       });
   }
 
-  const columns = [
-    {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
-      sorter: (a, b) => a.id - b.id,
-      defaultSortOrder: 'ascend'
-    },
-    {
-      title: 'First name',
-      dataIndex: 'firstName',
-      key: 'firstName',
-      render: (data) => data === null ? 'Unset' : data,
-      sorter: (a, b) => ('' + a.firstName).localeCompare(b.firstName),
-      responsive: ['lg'],
-      editable: true
-    },
-    {
-      title: 'Last name',
-      dataIndex: 'lastName',
-      key: 'lastName',
-      render: (data) => data === null ? 'Unset' : data,
-      sorter: (a, b) => ('' + a.lastName).localeCompare(b.lastName),
-      responsive: ['lg'],
-      editable: true
-    },
-    {
-      title: 'Comment',
-      dataIndex: 'comment',
-      key: 'comment',
-      sorter: (a, b) => a.comment.length - b.comment.length,
-      editable: true
-    },
-    {
-      title: 'Rate',
-      dataIndex: 'rate',
-      key: 'rate',
-      sorter: (a, b) => a.comment - b.comment,
-      editable: true
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_, record) => {
-        const editable = isEditingDriver(record);
-        return editable ? (
-          <span>
-            <Button
-              onClick={() => updateDriver(record.key)}
-              style={{
-                marginRight: 8,
-              }}
-            >
-              Save
-            </Button>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancelEditingDriver}>
-              <Button type="link">Cancel</Button>
-            </Popconfirm>
-          </span>
-        ) : (
-          <Space size="middle">
-            <Button type="default" disabled={editingKey !== ''} onClick={() => startEditingDriver(record)}>
-              Edit
-            </Button>
-            <Button type="link" onClick={() => removeDriver(record.id)}>Delete</Button>
-          </Space>
-        );
+  async function handleDriverUpdate(values) {
+    const newDriver = await app.update(
+      'drivers',
+      {
+        ...values,
+        id: driverId,
       },
-    },
-  ];
+      true
+    );
 
-  const mergedColumns = columns.map(col => {
-    if (!col.editable) {
-      return col;
-    }
+    console.log(newDriver.data);
+  }
 
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        inputType: col.dataIndex === 'rate' ? 'number' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditingDriver(record),
-      }),
-    };
-  });
-  
   return (
     <Spin spinning={isRequestPending}>
-      <PageHeader title="Drivers" extra={[
-        <Button type="primary" key={0}>
-          <Link to={`${url}/addDriver`}>Add new Driver</Link>
-        </Button>
-      ]} />
-      
+      <PageHeader
+        title="Drivers"
+        extra={[
+          <Button type="primary" key={0}>
+            <Link to={`${url}/addDriver`}>Add new Driver</Link>
+          </Button>,
+        ]}
+      />
+
       {drivers !== [] && !error ? (
-        <Form form={form} component={false}>
+        <>
           <Table
-            pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: drivers.count }}
-            components={{
-              body: {
-                cell: EditableCell
-              }
+            pagination={{
+              defaultCurrent: 1,
+              defaultPageSize: 9,
+              total: drivers.count,
             }}
             scroll={{ x: '100vw' }}
-            columns={mergedColumns}
+            columns={columns}
             dataSource={drivers}
           />
-        </Form>
+          <Modal
+            visible={modalVisible}
+            onCancel={closeModal}
+            footer={null}
+            destroyOnClose
+          >
+            <DriverForm
+              onSubmit={handleDriverUpdate}
+              driverData={editedDriver}
+            />
+          </Modal>
+        </>
       ) : (
         error && (
           <Result
@@ -241,7 +242,9 @@ export default function DriversTable() {
             subTitle={error.description}
             extra={
               // eslint-disable-next-line no-restricted-globals
-              <Button onClick={() => location.reload()}>Refresh the page</Button>
+              <Button onClick={() => location.reload()}>
+                Refresh the page
+              </Button>
             }
           />
         )

@@ -216,21 +216,12 @@ export default function AddDriver() {
               />
             </Form.Item>
 
-            <Form.Item
-              name="trailer"
-              label="Trailer"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
+            <Form.Item name="trailer" label="Trailer">
               <Select
                 placeholder="Select a trailer"
                 onChange={onTrailerChange}
                 allowClear
               >
-                <Select.Option value={null}></Select.Option>
                 {trailers.map((trailer) => {
                   return (
                     <Select.Option key={trailer.id} value={trailer.id}>
@@ -240,21 +231,12 @@ export default function AddDriver() {
                 })}
               </Select>
             </Form.Item>
-            <Form.Item
-              name="trucks"
-              label="Trucks"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
+            <Form.Item name="trucks" label="Trucks">
               <Select
                 placeholder="Select a truck"
                 onChange={onTruckChange}
                 allowClear
               >
-                <Select.Option value={null}></Select.Option>
                 {trucks.map((truck) => {
                   return (
                     <Select.Option key={truck.id} value={truck.id}>

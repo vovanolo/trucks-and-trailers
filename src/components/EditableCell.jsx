@@ -1,6 +1,8 @@
 import React from 'react';
 import { Input, Form, Select } from 'antd';
 
+import app from '../express-client';
+
 export default function EditableCell({
   editing,
   dataIndex,
@@ -11,12 +13,26 @@ export default function EditableCell({
   children,
   ...restProps
 }) {
-  const inputNode = inputType === 'check' ? (
-    <Select allowClear={false}>
-      <Select.Option key="user" value="user">user</Select.Option>
-      <Select.Option key="admin" value="admin">admin</Select.Option>
-    </Select>
-  ) : <Input />;
+  let inputNode;
+
+  switch (inputType) {
+    case 'check':
+      inputNode = (
+        <Select allowClear={false}>
+          <Select.Option key="user" value="user">
+            user
+          </Select.Option>
+          <Select.Option key="admin" value="admin">
+            admin
+          </Select.Option>
+        </Select>
+      );
+      break;
+
+    default:
+      inputNode = <Input />;
+      break;
+  }
   return (
     <td {...restProps}>
       {editing ? (
@@ -39,4 +55,4 @@ export default function EditableCell({
       )}
     </td>
   );
-};
+}

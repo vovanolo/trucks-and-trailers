@@ -27,19 +27,7 @@
   "eslintConfig": {
     "extends": "react-app",
     "rules": {
-      "semi": "error",
-      "indent": [
-        "error",
-        2
-      ],
-      "jsx-quotes": [
-        "error",
-        "prefer-double"
-      ],
-      "quotes": [
-        "error",
-        "single"
-      ]
+      "semi": "error"
     }
   },
   "browserslist": {

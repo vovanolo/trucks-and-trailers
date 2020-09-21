@@ -187,16 +187,43 @@ export default function DriversTable() {
   }
 
   async function handleDriverUpdate(values) {
-    const newDriver = await app.update(
-      'drivers',
-      {
-        ...values,
-        id: driverId,
-      },
-      true
-    );
+    setIsRequestPending(true);
 
-    console.log(newDriver.data);
+    try {
+      const newDriver = await app.update(
+        'drivers',
+        {
+          ...values,
+          id: driverId,
+          trailerId: values.trailerId ? values.trailerId : null,
+          truckId: values.truckId ? values.truckId : null,
+        },
+        true
+      );
+
+      if (mounted) {
+        setIsRequestPending(false);
+        setDrivers((prevState) => {
+          return prevState.map((driver) => {
+            if (driver.id === newDriver.data.id) {
+              return {
+                ...driver,
+                ...newDriver.data,
+              };
+            }
+          });
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setIsRequestPending(false);
+        setError(getFormattedError(error));
+      }
+    } finally {
+      if (mounted) {
+        setIsRequestPending(false);
+      }
+    }
   }
 
   return (

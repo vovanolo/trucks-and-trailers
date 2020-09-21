@@ -37,8 +37,8 @@ export default function DriverForm({ onSubmit, driverData }) {
       initialValues={{
         remember: true,
         ...driverData,
-        trailer: driverData.Trailer ? driverData.Trailer.id : undefined,
-        truck: driverData.Truck ? driverData.Truck.id : undefined,
+        trailerId: driverData.Trailer ? driverData.Trailer.id : undefined,
+        truckId: driverData.Truck ? driverData.Truck.id : undefined,
       }}
       onFinish={onSubmit}
     >
@@ -78,7 +78,7 @@ export default function DriverForm({ onSubmit, driverData }) {
         <Input type="number" placeholder="Rate" />
       </Form.Item>
 
-      <Form.Item name="trailer" label="Trailer">
+      <Form.Item name="trailerId" label="Trailer">
         <Select placeholder="Select a trailer" allowClear>
           {trailers.map((trailer) => {
             return (
@@ -90,7 +90,7 @@ export default function DriverForm({ onSubmit, driverData }) {
         </Select>
       </Form.Item>
 
-      <Form.Item name="truck" label="Truck">
+      <Form.Item name="truckId" label="Truck">
         <Select placeholder="Select a truck" allowClear>
           {trucks.map((truck) => {
             return (

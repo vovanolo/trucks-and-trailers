@@ -211,6 +211,8 @@ export default function DriversTable() {
                 ...newDriver.data,
               };
             }
+
+            return driver;
           });
         });
       }
@@ -245,7 +247,7 @@ export default function DriversTable() {
               defaultPageSize: 9,
               total: drivers.count,
             }}
-            scroll={{ x: '100vw' }}
+            scroll={{ x: '97vw' }}
             columns={columns}
             dataSource={drivers}
           />

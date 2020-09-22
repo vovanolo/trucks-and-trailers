@@ -35,13 +35,7 @@ function DayInfoForm({ onSubmit, dayInfoData }) {
           },
         ]}
       >
-        <InputMask
-          mask="99:00"
-          formatChars={{
-            9: '[0-23]',
-            0: '[0-59]',
-          }}
-        >
+        <InputMask mask="99:99">
           {(inputProps) => (
             <Input {...inputProps} type="text" placeholder="Enter time" />
           )}

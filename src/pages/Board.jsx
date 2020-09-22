@@ -13,13 +13,15 @@ const mainColumns = [
   },
   {
     title: 'Truck',
-    dataIndex: 'truck',
+    dataIndex: 'Truck',
     key: 'truck',
+    render: (data) => (data ? data.name : 'Empty'),
   },
   {
     title: 'Trailer',
-    dataIndex: 'trailer',
+    dataIndex: 'Trailer',
     key: 'trailer',
+    render: (data) => (data ? data.name : 'Empty'),
   },
   {
     title: 'Comment',
@@ -205,7 +207,7 @@ export default function Board() {
         columns={columns}
         dataSource={dataSource}
         pagination={false}
-        scroll={{ x: '100vw' }}
+        scroll={{ x: '97vw' }}
       />
 
       <Modal

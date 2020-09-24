@@ -46,43 +46,34 @@ export default function Navbar() {
               <Link to="/login">Login</Link>
             </Menu.Item>
           ) : (
-            <Dropdown overlay={(
-              <Menu>
-                <Menu.Item>
-                  <Link to="/profile">
-                    Profile
-                  </Link>
-                </Menu.Item>
-                <Menu.Item>
-                  <Link to="/board">
-                    Board
-                  </Link>
-                </Menu.Item>
-                <Menu.Item>
-                  <Link to="/drivers">
-                    Drivers
-                  </Link>
-                </Menu.Item>
-                <Menu.Item>
-                  <Link to="/trailers">
-                    Trailers
-                  </Link>
-                </Menu.Item>
-                <Menu.Item>
-                  <Link to="/trucks">
-                    Trucks
-                  </Link>
-                </Menu.Item>
-                {user.user.role === 'admin' && (
-                  <Menu.Item key="admin">
-                    <Link to="/admin">Admin Panel</Link>
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <Link to="/board">Board</Link>
                   </Menu.Item>
-                )}
-                <Menu.Item>
-                  <Button onClick={logout} type="default" danger>Logout</Button>
-                </Menu.Item>
-              </Menu>
-            )}>
+                  <Menu.Item>
+                    <Link to="/drivers">Drivers</Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Link to="/trailers">Trailers</Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Link to="/trucks">Trucks</Link>
+                  </Menu.Item>
+                  {user.user.role === 'admin' && (
+                    <Menu.Item key="admin">
+                      <Link to="/admin">Admin Panel</Link>
+                    </Menu.Item>
+                  )}
+                  <Menu.Item>
+                    <Button onClick={logout} type="default" danger>
+                      Logout
+                    </Button>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
               <Avatar size="default" className="text-unselectable avatar-btn">
                 {user.user.username[0].toUpperCase()}
               </Avatar>

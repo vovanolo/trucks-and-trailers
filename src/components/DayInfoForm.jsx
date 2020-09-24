@@ -43,7 +43,7 @@ function DayInfoForm({ onSubmit, dayInfoData }) {
       </Form.Item>
 
       <Form.Item
-        label="Value"
+        label="Value $"
         name="value"
         rules={[
           {
@@ -53,6 +53,19 @@ function DayInfoForm({ onSubmit, dayInfoData }) {
         ]}
       >
         <Input type="number" placeholder="Enter the value" />
+      </Form.Item>
+
+      <Form.Item
+        label="Miles"
+        name="miles"
+        rules={[
+          {
+            required: true,
+            message: 'Please enter miles',
+          },
+        ]}
+      >
+        <Input type="number" placeholder="Enter miles" />
       </Form.Item>
 
       <Form.Item

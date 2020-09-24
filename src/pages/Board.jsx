@@ -28,6 +28,23 @@ const mainColumns = [
     dataIndex: 'comment',
     key: 'comment',
   },
+  {
+    title: 'Price',
+    dataIndex: 'price',
+    key: 'price',
+    render: (data) => `${data}$`,
+  },
+  {
+    title: 'Miles',
+    dataIndex: 'miles',
+    key: 'miles',
+  },
+  {
+    title: 'Price/Miles',
+    dataIndex: 'priceMiles',
+    key: 'priceMiles',
+    render: (data) => data.toFixed(5),
+  },
 ];
 
 let dateColumns = [];
@@ -87,15 +104,13 @@ export default function Board() {
     }
 
     setColumns([...mainColumns, ...dateColumns]);
-  }, [week]);
 
-  useEffect(() => {
     app.find('dayInfos/all', true, { dates }).then((res) => {
       const newData = formatData(res.data);
 
       setDataSource(newData);
     });
-  }, [columns]);
+  }, [week]);
 
   function showModal(e) {
     const data = e.currentTarget.dataset;
@@ -118,7 +133,6 @@ export default function Board() {
   }
 
   function handleOk() {
-    console.log(`Driver ID: ${driverId}, date: ${date}`);
     closeModal();
   }
 
@@ -147,6 +161,11 @@ export default function Board() {
           if (row.id === res.data.driverId) {
             return {
               ...row,
+              price: row.DayInfos.reduce((prev, next) => prev + next.value, 0),
+              miles: row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+              priceMiles:
+                row.DayInfos.reduce((prev, next) => prev + next.value, 0) /
+                row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
               [res.data.date]: res.data,
             };
           }
@@ -154,6 +173,8 @@ export default function Board() {
           return row;
         });
       });
+
+      setWeek((prevState) => prevState);
 
       closeModal();
     });
@@ -168,11 +189,29 @@ export default function Board() {
             if (row.id === res.data.driverId) {
               return {
                 ...row,
+                price: row.DayInfos.reduce(
+                  (prev, next) => prev + next.value,
+                  0
+                ),
+                miles: row.DayInfos.reduce(
+                  (prev, next) => prev + next.miles,
+                  0
+                ),
+                priceMiles:
+                  row.DayInfos.reduce((prev, next) => prev + next.value, 0) /
+                  row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
                 [res.data.date]: res.data,
               };
             }
 
-            return row;
+            return {
+              ...row,
+              price: row.DayInfos.reduce((prev, next) => prev + next.value, 0),
+              miles: row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+              priceMiles:
+                row.DayInfos.reduce((prev, next) => prev + next.value, 0) /
+                row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+            };
           });
         });
       });
@@ -190,6 +229,11 @@ export default function Board() {
       return {
         key: row.id,
         ...row,
+        price: row.DayInfos.reduce((prev, next) => prev + next.value, 0),
+        miles: row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+        priceMiles:
+          row.DayInfos.reduce((prev, next) => prev + next.value, 0) /
+          row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
         ...newDayInfos,
       };
     });
@@ -200,7 +244,7 @@ export default function Board() {
   return (
     <>
       <Button onClick={handleWeekDecrement}>{'<'}</Button>
-      <span style={{ padding: '1rem' }}>{week}</span>
+      <span style={{ padding: '1rem' }}>Week Number: {week}</span>
       <Button onClick={handleWeekIncrement}>{'>'}</Button>
 
       <Table

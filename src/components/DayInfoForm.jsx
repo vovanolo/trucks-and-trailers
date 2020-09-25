@@ -1,13 +1,15 @@
 import React from 'react';
-import { Form, Input, TimePicker, Select, Button } from 'antd';
+import { Form, Input, Select, Button } from 'antd';
 import moment from 'moment';
+import InputMask from 'react-input-mask';
 
-export default function DayInfoForm({ onSubmit }) {
+function DayInfoForm({ onSubmit, dayInfoData }) {
   return (
     <Form
       onFinish={onSubmit}
       initialValues={{
-        time: moment(),
+        time: moment().local(true).format('HH:mm'),
+        ...dayInfoData,
       }}
     >
       <Form.Item
@@ -33,11 +35,15 @@ export default function DayInfoForm({ onSubmit }) {
           },
         ]}
       >
-        <TimePicker placeholder="Choose time" />
+        <InputMask mask="99:99">
+          {(inputProps) => (
+            <Input {...inputProps} type="text" placeholder="Enter time" />
+          )}
+        </InputMask>
       </Form.Item>
 
       <Form.Item
-        label="Value"
+        label="Value $"
         name="value"
         rules={[
           {
@@ -47,6 +53,19 @@ export default function DayInfoForm({ onSubmit }) {
         ]}
       >
         <Input type="number" placeholder="Enter the value" />
+      </Form.Item>
+
+      <Form.Item
+        label="Miles"
+        name="miles"
+        rules={[
+          {
+            required: true,
+            message: 'Please enter miles',
+          },
+        ]}
+      >
+        <Input type="number" placeholder="Enter miles" />
       </Form.Item>
 
       <Form.Item
@@ -61,16 +80,22 @@ export default function DayInfoForm({ onSubmit }) {
       >
         <Select placeholder="Choose status">
           <Select.Option value="off">Off</Select.Option>
-          <Select.Option value="local run">Local Run</Select.Option>
-          <Select.Option value="in transit">In Transit</Select.Option>
+          <Select.Option value="localRun">Local Run</Select.Option>
+          <Select.Option value="inTransit">In Transit</Select.Option>
         </Select>
       </Form.Item>
 
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          Submit
+          {dayInfoData ? 'Edit' : 'Submit'}
         </Button>
       </Form.Item>
     </Form>
   );
 }
+
+DayInfoForm.defaultProps = {
+  dayInfoData: {},
+};
+
+export default DayInfoForm;

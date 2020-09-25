@@ -11,6 +11,7 @@
     "moment": "^2.28.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-input-mask": "^2.0.4",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
@@ -26,19 +27,7 @@
   "eslintConfig": {
     "extends": "react-app",
     "rules": {
-      "semi": "error",
-      "indent": [
-        "error",
-        2
-      ],
-      "jsx-quotes": [
-        "error",
-        "prefer-double"
-      ],
-      "quotes": [
-        "error",
-        "single"
-      ]
+      "semi": "error"
     }
   },
   "browserslist": {

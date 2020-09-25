@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal } from 'antd';
-import moment from 'moment';
 
 import DayInfoForm from '../components/DayInfoForm';
 
@@ -14,18 +13,37 @@ const mainColumns = [
   },
   {
     title: 'Truck',
-    dataIndex: 'truck',
+    dataIndex: 'Truck',
     key: 'truck',
+    render: (data) => (data ? data.name : 'Empty'),
   },
   {
     title: 'Trailer',
-    dataIndex: 'trailer',
+    dataIndex: 'Trailer',
     key: 'trailer',
+    render: (data) => (data ? data.name : 'Empty'),
   },
   {
     title: 'Comment',
     dataIndex: 'comment',
     key: 'comment',
+  },
+  {
+    title: 'Price',
+    dataIndex: 'price',
+    key: 'price',
+    render: (data) => `${data}$`,
+  },
+  {
+    title: 'Miles',
+    dataIndex: 'miles',
+    key: 'miles',
+  },
+  {
+    title: 'Price/Miles',
+    dataIndex: 'priceMiles',
+    key: 'priceMiles',
+    render: (data) => data.toFixed(5),
   },
 ];
 
@@ -39,6 +57,7 @@ export default function Board() {
   const [modalVisible, setModalVisible] = useState(false);
   const [driverId, setDriverId] = useState(null);
   const [date, setDate] = useState(null);
+  const [modalData, setModalData] = useState(null);
 
   useEffect(() => {
     const todayDate = new Date();
@@ -58,7 +77,15 @@ export default function Board() {
         key: nextDate.toDateString(),
         render: (data, record) =>
           data ? (
-            data
+            <Button
+              type="default"
+              size="middle"
+              onClick={showModal}
+              data-date={nextDate.toDateString()}
+              data-data={JSON.stringify(data)}
+            >
+              {data.status}
+            </Button>
           ) : (
             <Button
               type="primary"
@@ -66,7 +93,7 @@ export default function Board() {
               size="middle"
               onClick={showModal}
               data-date={nextDate.toDateString()}
-              data-record={JSON.stringify(record)}
+              data-driverid={record.id}
             >
               +
             </Button>
@@ -77,36 +104,35 @@ export default function Board() {
     }
 
     setColumns([...mainColumns, ...dateColumns]);
+
+    app.find('dayInfos/all', true, { dates }).then((res) => {
+      const newData = formatData(res.data);
+
+      setDataSource(newData);
+    });
   }, [week]);
-
-  useEffect(() => {
-    handleDataRequest();
-  }, [columns]);
-
-  useEffect(() => {
-    if (driverId && date) {
-      setModalVisible(true);
-    }
-  }, [driverId, date]);
 
   function showModal(e) {
     const data = e.currentTarget.dataset;
 
-    const { id: driverId } = JSON.parse(data.record);
-    const date = data.date;
+    if (data.data) {
+      setModalData(JSON.parse(data.data));
+    } else if (data.driverid) {
+      setDriverId(data.driverid);
+      setDate(data.date);
+    }
 
-    setDriverId(driverId);
-    setDate(date);
+    setModalVisible(true);
   }
 
   function closeModal() {
+    setModalData(null);
     setDriverId(null);
     setDate(null);
     setModalVisible(false);
   }
 
   function handleOk() {
-    console.log(`Driver ID: ${driverId}, date: ${date}`);
     closeModal();
   }
 
@@ -122,53 +148,113 @@ export default function Board() {
     setWeek((prevState) => prevState - 1);
   }
 
-  function handleDataRequest() {
-    app.find('dayInfos', true, { dates }).then((res) => {
-      const newData = formatData(res.data);
-
-      setDataSource(newData);
-    });
-  }
-
   function handleAddDayInfo(values) {
     const requestBody = {
       ...values,
-      time: moment(values.time).format('LTS'),
       driverId,
+      date,
     };
 
-    console.log(requestBody);
+    app.create('dayInfos', requestBody, true).then((res) => {
+      setDataSource((prevState) => {
+        return prevState.map((row) => {
+          if (row.id === res.data.driverId) {
+            return {
+              ...row,
+              price: row.DayInfos.reduce((prev, next) => prev + next.value, 0),
+              miles: row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+              priceMiles:
+                row.DayInfos.reduce((prev, next) => prev + next.value, 0) /
+                row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+              [res.data.date]: res.data,
+            };
+          }
+
+          return row;
+        });
+      });
+
+      // eslint-disable-next-line no-restricted-globals
+      location.reload();
+
+      closeModal();
+    });
+  }
+
+  function handleEditDayInfo(values) {
+    app
+      .update('dayInfos', { ...values, id: modalData.id }, true)
+      .then((res) => {
+        setDataSource((prevState) => {
+          return prevState.map((row) => {
+            if (row.id === res.data.driverId) {
+              return {
+                ...row,
+                price: row.DayInfos.reduce(
+                  (prev, next) => prev + next.value,
+                  0
+                ),
+                miles: row.DayInfos.reduce(
+                  (prev, next) => prev + next.miles,
+                  0
+                ),
+                priceMiles:
+                  row.DayInfos.reduce((prev, next) => prev + next.value, 0) /
+                  row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+                [res.data.date]: res.data,
+              };
+            }
+
+            return {
+              ...row,
+              price: row.DayInfos.reduce((prev, next) => prev + next.value, 0),
+              miles: row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+              priceMiles:
+                row.DayInfos.reduce((prev, next) => prev + next.value, 0) /
+                row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+            };
+          });
+        });
+      });
+    // eslint-disable-next-line no-restricted-globals
+    location.reload();
   }
 
   function formatData(data) {
-    return data.map((row) => {
-      const newDayInfos = row.DayInfos.map((dayInfo) => {
+    const newData = data.map((row) => {
+      const newDayInfos = row.DayInfos.reduce((newDayInfos, dayInfo) => {
         return {
-          [dayInfo.date]: (
-            <Button data-day_info={dayInfo}>{dayInfo.status}</Button>
-          ),
+          ...newDayInfos,
+          [dayInfo.date]: dayInfo,
         };
-      });
+      }, {});
 
       return {
         key: row.id,
         ...row,
-        ...newDayInfos[0],
+        price: row.DayInfos.reduce((prev, next) => prev + next.value, 0),
+        miles: row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+        priceMiles:
+          row.DayInfos.reduce((prev, next) => prev + next.value, 0) /
+          row.DayInfos.reduce((prev, next) => prev + next.miles, 0),
+        ...newDayInfos,
       };
     });
+
+    return newData;
   }
 
   return (
     <>
       <Button onClick={handleWeekDecrement}>{'<'}</Button>
-      <span style={{ padding: '1rem' }}>{week}</span>
+      <span style={{ padding: '1rem' }}>Week Number: {week}</span>
       <Button onClick={handleWeekIncrement}>{'>'}</Button>
 
       <Table
         columns={columns}
         dataSource={dataSource}
         pagination={false}
-        scroll={{ x: '100vw' }}
+        scroll={{ x: '97vw' }}
       />
 
       <Modal
@@ -176,9 +262,13 @@ export default function Board() {
         visible={modalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
+        footer={null}
         destroyOnClose
       >
-        <DayInfoForm onSubmit={handleAddDayInfo} />
+        <DayInfoForm
+          onSubmit={modalData ? handleEditDayInfo : handleAddDayInfo}
+          dayInfoData={modalData}
+        />
       </Modal>
     </>
   );

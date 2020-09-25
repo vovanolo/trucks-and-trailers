@@ -3,7 +3,11 @@ import { Route, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Spin } from 'antd';
 
-export default function ProtectedRoute({ component: Component, adminOnly, ...rest }) {
+export default function ProtectedRoute({
+  component: Component,
+  adminOnly,
+  ...rest
+}) {
   const history = useHistory();
   const user = useSelector((state) => state.usersReducer);
   const isLoading = useSelector((state) => state.authReducer);
@@ -12,19 +16,18 @@ export default function ProtectedRoute({ component: Component, adminOnly, ...res
     if ((!user || (adminOnly && user.user.role !== 'admin')) && !isLoading) {
       history.push('/unauthorized');
     }
-  }, [isLoading]);
-
+  }, [isLoading, adminOnly, history, user]);
 
   return (
     <Spin spinning={isLoading}>
       {!isLoading ? (
-        <Route {...rest} render={
-          (props) => <Component {...rest} {...props} />
-        }
+        <Route
+          {...rest}
+          render={(props) => <Component {...rest} {...props} />}
         />
       ) : (
         <div style={{ height: '100vh' }} />
       )}
     </Spin>
   );
-};
+}

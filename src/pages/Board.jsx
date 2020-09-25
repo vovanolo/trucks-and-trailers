@@ -174,7 +174,8 @@ export default function Board() {
         });
       });
 
-      setWeek((prevState) => prevState);
+      // eslint-disable-next-line no-restricted-globals
+      location.reload();
 
       closeModal();
     });
@@ -215,6 +216,8 @@ export default function Board() {
           });
         });
       });
+    // eslint-disable-next-line no-restricted-globals
+    location.reload();
   }
 
   function formatData(data) {

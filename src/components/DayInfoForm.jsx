@@ -87,7 +87,7 @@ function DayInfoForm({ onSubmit, dayInfoData }) {
 
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          Submit
+          {dayInfoData ? 'Edit' : 'Submit'}
         </Button>
       </Form.Item>
     </Form>

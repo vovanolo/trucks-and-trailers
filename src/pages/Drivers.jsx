@@ -92,6 +92,15 @@ export default function DriversTable() {
       editable: true,
     },
     {
+      title: 'Company',
+      dataIndex: 'Company',
+      key: 'Company',
+      render: (data) => {
+        console.log(data);
+        return data ? data.name : 'Empty';
+      },
+    },
+    {
       title: 'Truck',
       dataIndex: 'Truck',
       key: 'Truck',
@@ -197,6 +206,7 @@ export default function DriversTable() {
           id: driverId,
           trailerId: values.trailerId ? values.trailerId : null,
           truckId: values.truckId ? values.truckId : null,
+          companyId: values.companyId ? values.companyId : null,
         },
         true
       );

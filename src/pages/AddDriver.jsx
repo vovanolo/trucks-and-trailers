@@ -11,6 +11,8 @@ export default function AddDriver() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [comment, setComment] = useState('');
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
   const [trailers, setTrailers] = useState([]);
   const [selectedTrailer, setSelectedTrailer] = useState(null);
   const [trucks, setTrucks] = useState([]);
@@ -35,6 +37,7 @@ export default function AddDriver() {
           rate,
           trailerId: selectedTrailer,
           truckId: selectedTruck,
+          companyId: selectedCompany,
         },
         true
       )
@@ -108,14 +111,51 @@ export default function AddDriver() {
   }, []);
 
   useEffect(() => {
+    mounted = true;
+    setIsRequestPending(true);
+
+    app
+      .find('companies', true)
+      .then((res) => {
+        if (mounted) {
+          setIsRequestPending(false);
+
+          let filteredCompanies = res.data.filter((company) => {
+            if (company.driverId === null) {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          setCompanies(filteredCompanies);
+        }
+      })
+      .catch((error) => {
+        if (mounted) {
+          setIsRequestPending(false);
+          setError(getFormattedError(error));
+        }
+      });
+
+    return function cleanup() {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     setSuccess(false);
   }, [error]);
 
   const onTrailerChange = (value) => {
     setSelectedTrailer(value);
   };
+
   const onTruckChange = (value) => {
     setSelectedTruck(value);
+  };
+
+  const onCompanyChange = (value) => {
+    setSelectedCompany(value);
   };
 
   return (
@@ -231,6 +271,7 @@ export default function AddDriver() {
                 })}
               </Select>
             </Form.Item>
+
             <Form.Item name="trucks" label="Trucks">
               <Select
                 placeholder="Select a truck"
@@ -241,6 +282,22 @@ export default function AddDriver() {
                   return (
                     <Select.Option key={truck.id} value={truck.id}>
                       {truck.name}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+
+            <Form.Item name="companies" label="Companies">
+              <Select
+                placeholder="Select a company"
+                onChange={onCompanyChange}
+                allowClear
+              >
+                {companies.map((company) => {
+                  return (
+                    <Select.Option key={company.id} value={company.id}>
+                      {company.name}
                     </Select.Option>
                   );
                 })}

@@ -6,22 +6,30 @@ import app from '../express-client';
 export default function DriverForm({ onSubmit, driverData }) {
   const [trucks, setTrucks] = useState([]);
   const [trailers, setTrailers] = useState([]);
+  const [companies, setCompanies] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const newTrucks = await app.find('trucks', true);
         const newTrailers = await app.find('trailers', true);
+        const newCompanies = await app.find('companies', true);
 
         const filteredTrucks = newTrucks.data.filter(
           ({ driverId }) => !driverId || driverId == driverData.id
         );
+
         const filteredTrailers = newTrailers.data.filter(
+          ({ driverId }) => !driverId || driverId == driverData.id
+        );
+
+        const filteredCompanies = newCompanies.data.filter(
           ({ driverId }) => !driverId || driverId == driverData.id
         );
 
         setTrucks(filteredTrucks);
         setTrailers(filteredTrailers);
+        setCompanies(filteredCompanies);
       } catch (error) {
         console.log(error);
       }
@@ -39,6 +47,7 @@ export default function DriverForm({ onSubmit, driverData }) {
         ...driverData,
         trailerId: driverData.Trailer ? driverData.Trailer.id : undefined,
         truckId: driverData.Truck ? driverData.Truck.id : undefined,
+        companyId: driverData.Company ? driverData.Company.id : undefined,
       }}
       onFinish={onSubmit}
     >
@@ -76,6 +85,18 @@ export default function DriverForm({ onSubmit, driverData }) {
         rules={[{ required: true, message: "Please type driver's rate" }]}
       >
         <Input type="number" placeholder="Rate" />
+      </Form.Item>
+
+      <Form.Item name="companyId" label="Company">
+        <Select placeholder="Select a company" allowClear>
+          {companies.map((company) => {
+            return (
+              <Select.Option key={company.id} value={company.id}>
+                {company.name}
+              </Select.Option>
+            );
+          })}
+        </Select>
       </Form.Item>
 
       <Form.Item name="trailerId" label="Trailer">

@@ -158,6 +158,14 @@ export default function AddDriver() {
     setSelectedCompany(value);
   };
 
+  const filteredTrailers = trailers.filter((trailer) =>
+    selectedCompany ? trailer.companyId === selectedCompany : true
+  );
+
+  const filteredTrucks = trucks.filter((truck) =>
+    selectedCompany ? truck.companyId === selectedCompany : true
+  );
+
   return (
     <div>
       <PageHeader title="Add new Driver" onBack={() => history.goBack()} />
@@ -262,7 +270,7 @@ export default function AddDriver() {
                 onChange={onTrailerChange}
                 allowClear
               >
-                {trailers.map((trailer) => {
+                {filteredTrailers.map((trailer) => {
                   return (
                     <Select.Option key={trailer.id} value={trailer.id}>
                       {trailer.name}
@@ -278,7 +286,7 @@ export default function AddDriver() {
                 onChange={onTruckChange}
                 allowClear
               >
-                {trucks.map((truck) => {
+                {filteredTrucks.map((truck) => {
                   return (
                     <Select.Option key={truck.id} value={truck.id}>
                       {truck.name}

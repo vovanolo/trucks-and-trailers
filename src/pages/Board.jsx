@@ -7,6 +7,12 @@ import app from '../express-client';
 
 const mainColumns = [
   {
+    title: 'Company',
+    dataIndex: 'Company',
+    key: 'Company',
+    render: (data) => (data ? data.name : 'Empty'),
+  },
+  {
     title: 'Driver',
     dataIndex: 'firstName',
     key: 'firstName',

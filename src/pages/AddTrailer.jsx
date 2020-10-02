@@ -10,6 +10,7 @@ export default function AddDriver() {
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
   const [error, setError] = useState(null);
+  const [companies, setCompanies] = useState([]);
   const [isRequestPending, setIsRequestPending] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -18,47 +19,57 @@ export default function AddDriver() {
   function addTrailer() {
     setIsRequestPending(true);
 
-    app.create('trailers', {
-      name,
-      location,
-      comment
-    }, true)
+    app
+      .create(
+        'trailers',
+        {
+          name,
+          location,
+          comment,
+        },
+        true
+      )
       .then((res) => setSuccess(true))
       .catch((error) => setError(getFormattedError(error)))
       .finally(() => setIsRequestPending(false));
   }
 
   useEffect(() => {
+    app
+      .find('companies', true)
+      .then((res) => setCompanies(res.data))
+      .catch((error) => console.dir(error));
+  }, []);
+
+  useEffect(() => {
     setSuccess(false);
   }, [error]);
-  
+
   return (
     <div>
-      <PageHeader
-        title="Add new Trailer"
-        onBack={() => history.goBack()}
-      />
+      <PageHeader title="Add new Trailer" onBack={() => history.goBack()} />
       <Row justify="center">
         <Col span={6} md={6} sm={16} xs={20}>
-          {!isRequestPending && (
-            error ? (
+          {!isRequestPending &&
+            (error ? (
               <Alert
                 type="error"
                 message={`${error.code}: ${error.message}`}
                 description={error.description}
               />
-            ) : success && (
-              <Alert
-                type="success"
-                message="Trailer added successfully"
-                description={
-                  <Button type="link">
-                    <Link to="/trailers">View all Trailers</Link>
-                  </Button>
-                }
-              />
-            )
-          )}
+            ) : (
+              success && (
+                <Alert
+                  type="success"
+                  message="Trailer added successfully"
+                  description={
+                    <Button type="link">
+                      <Link to="/trailers">View all Trailers</Link>
+                    </Button>
+                  }
+                />
+              )
+            ))}
           <Form
             name="addTrailerForm"
             layout="vertical"
@@ -69,24 +80,36 @@ export default function AddDriver() {
               label="Name"
               name="name"
               hasFeedback
-              rules={[{ required: true, message: 'Please type trailer\'s Name' }]}
+              rules={[
+                { required: true, message: "Please type trailer's Name" },
+              ]}
             >
-              <Input type="text" placeholder="Name" onChange={(e) => {
-                setName(e.currentTarget.value);
-                setError(null);
-              }} />
+              <Input
+                type="text"
+                placeholder="Name"
+                onChange={(e) => {
+                  setName(e.currentTarget.value);
+                  setError(null);
+                }}
+              />
             </Form.Item>
 
             <Form.Item
               label="Location"
               name="location"
               hasFeedback
-              rules={[{ required: true, message: 'Please type driver\'s Last Name' }]}
+              rules={[
+                { required: true, message: "Please type driver's Last Name" },
+              ]}
             >
-              <Input type="text" placeholder="Location" onChange={(e) => {
-                setLocation(e.currentTarget.value);
-                setError(null);
-              }} />
+              <Input
+                type="text"
+                placeholder="Location"
+                onChange={(e) => {
+                  setLocation(e.currentTarget.value);
+                  setError(null);
+                }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -95,13 +118,18 @@ export default function AddDriver() {
               hasFeedback
               rules={[{ required: true, message: 'Please type in comment' }]}
             >
-              <Input.TextArea placeholder="Comment" onChange={(e) => {
-                setComment(e.currentTarget.value);
-                setError(null);
-              }} />
+              <Input.TextArea
+                placeholder="Comment"
+                onChange={(e) => {
+                  setComment(e.currentTarget.value);
+                  setError(null);
+                }}
+              />
             </Form.Item>
 
-            <Button type="primary" htmlType="submit">Add</Button>
+            <Button type="primary" htmlType="submit">
+              Add
+            </Button>
           </Form>
         </Col>
       </Row>

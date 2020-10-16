@@ -102,6 +102,7 @@ export default function DriverForm({ onSubmit, driverData }) {
       <Form.Item name="trailerId" label="Trailer">
         <Select placeholder="Select a trailer" allowClear>
           {trailers.map((trailer) => {
+            console.log(trailer);
             return (
               <Select.Option key={trailer.id} value={trailer.id}>
                 {trailer.name}

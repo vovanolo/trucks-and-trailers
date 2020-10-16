@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Row, Col, PageHeader, Alert } from 'antd';
+import { Form, Input, Button, Row, Col, PageHeader, Alert, Select } from 'antd';
 import { useHistory, Link } from 'react-router-dom';
 
 import app from '../express-client';
@@ -16,19 +16,11 @@ export default function AddDriver() {
 
   const history = useHistory();
 
-  function addTrailer() {
+  function addTrailer(values) {
     setIsRequestPending(true);
 
     app
-      .create(
-        'trailers',
-        {
-          name,
-          location,
-          comment,
-        },
-        true
-      )
+      .create('trailers', values, true)
       .then((res) => setSuccess(true))
       .catch((error) => setError(getFormattedError(error)))
       .finally(() => setIsRequestPending(false));
@@ -125,6 +117,18 @@ export default function AddDriver() {
                   setError(null);
                 }}
               />
+            </Form.Item>
+
+            <Form.Item name="companyId" label="Company">
+              <Select placeholder="Select a company" allowClear>
+                {companies.map((company) => {
+                  return (
+                    <Select.Option key={company.id} value={company.id}>
+                      {company.name}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
             </Form.Item>
 
             <Button type="primary" htmlType="submit">

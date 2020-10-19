@@ -33,7 +33,7 @@ export default function Trailers() {
     setIsRequestPending(true);
 
     app
-      .find('trailer', true)
+      .find('trailers', true)
       .then((res) => {
         if (mounted) {
           setIsRequestPending(false);
@@ -162,12 +162,11 @@ export default function Trailers() {
       editable: true,
     },
     {
-      title: 'Rate',
-      dataIndex: 'rate',
-      key: 'rate',
-      sorter: (a, b) => a.rate - b.rate,
-      render: (data) => (data === null ? 'Unset' : data),
-      editable: true,
+      title: 'Company',
+      dataIndex: 'Company',
+      key: 'Company',
+      editable: false,
+      render: (data) => (data ? data.name : 'Unset'),
     },
     {
       title: 'Action',

@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Space, Button, PageHeader, Popconfirm, Form, Spin, Result } from 'antd';
+import {
+  Table,
+  Tag,
+  Space,
+  Button,
+  PageHeader,
+  Popconfirm,
+  Form,
+  Spin,
+  Result,
+} from 'antd';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import app from '../../express-client';
@@ -19,12 +29,12 @@ export default function UsersTable() {
 
   const { url } = useRouteMatch();
 
-  
   useEffect(() => {
     mounted = true;
     setIsRequestPending(true);
 
-    app.find('users', true)
+    app
+      .find('users', true)
       .then((res) => {
         if (mounted) {
           setIsRequestPending(false);
@@ -62,16 +72,17 @@ export default function UsersTable() {
       ...record,
     });
     setEditingKey(record.key);
-  };
+  }
 
   async function updateUser(key) {
     try {
       const row = await form.validateFields();
+      console.log(row);
       const rowWithId = {
         ...row,
-        id: key
+        id: key,
       };
-      
+
       setIsRequestPending(true);
 
       await app.update('users', rowWithId, true);
@@ -80,7 +91,7 @@ export default function UsersTable() {
         setIsRequestPending(false);
 
         const newData = [...users];
-        const index = newData.findIndex(item => key === item.key);
+        const index = newData.findIndex((item) => key === item.key);
 
         if (index > -1) {
           const item = newData[index];
@@ -99,16 +110,17 @@ export default function UsersTable() {
         setError(getFormattedError(error));
       }
     }
-  };
+  }
 
   function cancelEditingUser() {
     setEditingKey('');
-  };
+  }
 
   function removeUser(id) {
     setIsRequestPending(true);
 
-    app.delete('users', id, true)
+    app
+      .delete('users', id, true)
       .then(() => {
         if (mounted) {
           setIsRequestPending(false);
@@ -130,32 +142,39 @@ export default function UsersTable() {
       dataIndex: 'id',
       key: 'id',
       sorter: (a, b) => a.id - b.id,
-      defaultSortOrder: 'ascend'
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'First name',
       dataIndex: 'firstName',
       key: 'firstName',
-      render: (data) => data === null ? 'Unset' : data,
+      render: (data) => (data === null ? 'Unset' : data),
       sorter: (a, b) => ('' + a.firstName).localeCompare(b.firstName),
       responsive: ['lg'],
-      editable: true
+      editable: true,
     },
     {
       title: 'Last name',
       dataIndex: 'lastName',
       key: 'lastName',
-      render: (data) => data === null ? 'Unset' : data,
+      render: (data) => (data === null ? 'Unset' : data),
       sorter: (a, b) => ('' + a.lastName).localeCompare(b.lastName),
       responsive: ['lg'],
-      editable: true
+      editable: true,
     },
     {
       title: 'Username',
       dataIndex: 'username',
       key: 'username',
       sorter: (a, b) => ('' + a.username).localeCompare(b.username),
-      editable: true
+      editable: true,
+    },
+    {
+      title: 'Password',
+      dataIndex: 'password',
+      key: 'password',
+      editable: true,
+      render: () => '',
     },
     {
       title: 'Role',
@@ -164,12 +183,12 @@ export default function UsersTable() {
       filters: [
         {
           text: 'User',
-          value: 'user'
+          value: 'user',
         },
         {
           text: 'Admin',
-          value: 'admin'
-        }
+          value: 'admin',
+        },
       ],
       onFilter: (value, record) => record.role === value,
       sorter: (a, b) => ('' + a.role).localeCompare(b.role),
@@ -181,7 +200,7 @@ export default function UsersTable() {
           </Tag>
         );
       },
-      editable: true
+      editable: true,
     },
     {
       title: 'Action',
@@ -204,17 +223,23 @@ export default function UsersTable() {
           </span>
         ) : (
           <Space size="middle">
-            <Button type="default" disabled={editingKey !== ''} onClick={() => startEditingUser(record)}>
+            <Button
+              type="default"
+              disabled={editingKey !== ''}
+              onClick={() => startEditingUser(record)}
+            >
               Edit
             </Button>
-            <Button type="link" onClick={() => removeUser(record.id)}>Delete</Button>
+            <Button type="link" onClick={() => removeUser(record.id)}>
+              Delete
+            </Button>
           </Space>
         );
       },
     },
   ];
 
-  const mergedColumns = columns.map(col => {
+  const mergedColumns = columns.map((col) => {
     if (!col.editable) {
       return col;
     }
@@ -230,23 +255,30 @@ export default function UsersTable() {
       }),
     };
   });
-  
+
   return (
     <Spin spinning={isRequestPending}>
-      <PageHeader title="Admin" extra={[
-        <Button type="primary" key={0}>
-          <Link to={`${url}/addUser`}>Add new User</Link>
-        </Button>
-      ]} />
-      
+      <PageHeader
+        title="Admin"
+        extra={[
+          <Button type="primary" key={0}>
+            <Link to={`${url}/addUser`}>Add new User</Link>
+          </Button>,
+        ]}
+      />
+
       {users !== [] && !error ? (
         <Form form={form} component={false}>
           <Table
-            pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: users.count }}
+            pagination={{
+              defaultCurrent: 1,
+              defaultPageSize: 9,
+              total: users.count,
+            }}
             components={{
               body: {
-                cell: EditableCell
-              }
+                cell: EditableCell,
+              },
             }}
             scroll={{ x: '100vw' }}
             columns={mergedColumns}
@@ -261,7 +293,9 @@ export default function UsersTable() {
             subTitle={error.description}
             extra={
               // eslint-disable-next-line no-restricted-globals
-              <Button onClick={() => location.reload()}>Refresh the page</Button>
+              <Button onClick={() => location.reload()}>
+                Refresh the page
+              </Button>
             }
           />
         )

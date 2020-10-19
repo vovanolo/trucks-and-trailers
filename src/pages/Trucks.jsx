@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Space, Button, PageHeader, Popconfirm, Form, Spin, Result } from 'antd';
+import {
+  Table,
+  Space,
+  Button,
+  PageHeader,
+  Popconfirm,
+  Form,
+  Spin,
+  Result,
+} from 'antd';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import app from '../express-client';
@@ -23,7 +32,8 @@ export default function Trailers() {
     mounted = true;
     setIsRequestPending(true);
 
-    app.find('trucks', true)
+    app
+      .find('trucks', true)
       .then((res) => {
         if (mounted) {
           setIsRequestPending(false);
@@ -62,16 +72,16 @@ export default function Trailers() {
       ...record,
     });
     setEditingKey(record.key);
-  };
+  }
 
   async function updateTrailer(key) {
     try {
       const row = await form.validateFields();
       const rowWithId = {
         ...row,
-        id: key
+        id: key,
       };
-      
+
       setIsRequestPending(true);
 
       await app.update('trucks', rowWithId, true);
@@ -80,7 +90,7 @@ export default function Trailers() {
         setIsRequestPending(false);
 
         const newData = [...trailers];
-        const index = newData.findIndex(item => key === item.key);
+        const index = newData.findIndex((item) => key === item.key);
 
         if (index > -1) {
           const item = newData[index];
@@ -99,20 +109,23 @@ export default function Trailers() {
         setError(getFormattedError(error));
       }
     }
-  };
+  }
 
   function cancelEditingTrailer() {
     setEditingKey('');
-  };
+  }
 
   function removeTrailer(id) {
     setIsRequestPending(true);
 
-    app.delete('trucks', id, true)
+    app
+      .delete('trucks', id, true)
       .then(() => {
         if (mounted) {
           setIsRequestPending(false);
-          const filteredTrailers = trailers.filter((trailer) => trailer.id !== id);
+          const filteredTrailers = trailers.filter(
+            (trailer) => trailer.id !== id
+          );
           setTrailers(filteredTrailers);
         }
       })
@@ -130,39 +143,38 @@ export default function Trailers() {
       dataIndex: 'id',
       key: 'id',
       sorter: (a, b) => a.id - b.id,
-      defaultSortOrder: 'ascend'
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (data) => data === null ? 'Unset' : data,
+      render: (data) => (data === null ? 'Unset' : data),
       sorter: (a, b) => ('' + a.name).localeCompare(b.name),
       responsive: ['lg'],
-      editable: true
+      editable: true,
     },
     {
       title: 'Comment',
       dataIndex: 'comment',
       key: 'comment',
       sorter: (a, b) => a.comment.length - b.comment.length,
-      editable: true
+      editable: true,
     },
     {
       title: 'Rate',
       dataIndex: 'rate',
       key: 'rate',
       sorter: (a, b) => a.rate - b.rate,
-      render: (data) => data === null ? 'Unset' : data,
-      editable: true
+      render: (data) => (data === null ? 'Unset' : data),
+      editable: true,
     },
     {
-      title: 'Driver ID',
-      dataIndex: 'driverId',
-      key: 'driverId',
-      sorter: (a, b) => a.driverid - b.driverid,
-      render: (data) => data === null ? 'Unset' : data,
-      editable: false
+      title: 'Company',
+      dataIndex: 'Company',
+      key: 'Company',
+      editable: false,
+      render: (data) => (data ? data.name : 'Unset'),
     },
     {
       title: 'Action',
@@ -179,23 +191,32 @@ export default function Trailers() {
             >
               Save
             </Button>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancelEditingTrailer}>
+            <Popconfirm
+              title="Sure to cancel?"
+              onConfirm={cancelEditingTrailer}
+            >
               <Button type="link">Cancel</Button>
             </Popconfirm>
           </span>
         ) : (
           <Space size="middle">
-            <Button type="default" disabled={editingKey !== ''} onClick={() => startEditingTrailer(record)}>
+            <Button
+              type="default"
+              disabled={editingKey !== ''}
+              onClick={() => startEditingTrailer(record)}
+            >
               Edit
             </Button>
-            <Button type="link" onClick={() => removeTrailer(record.id)}>Delete</Button>
+            <Button type="link" onClick={() => removeTrailer(record.id)}>
+              Delete
+            </Button>
           </Space>
         );
       },
     },
   ];
 
-  const mergedColumns = columns.map(col => {
+  const mergedColumns = columns.map((col) => {
     if (!col.editable) {
       return col;
     }
@@ -211,23 +232,30 @@ export default function Trailers() {
       }),
     };
   });
-  
+
   return (
     <Spin spinning={isRequestPending}>
-      <PageHeader title="Trucks" extra={[
-        <Button type="primary" key={0}>
-          <Link to={`${url}/addTruck`}>Add new Truck</Link>
-        </Button>
-      ]} />
-      
+      <PageHeader
+        title="Trucks"
+        extra={[
+          <Button type="primary" key={0}>
+            <Link to={`${url}/addTruck`}>Add new Truck</Link>
+          </Button>,
+        ]}
+      />
+
       {trailers !== [] && !error ? (
         <Form form={form} component={false}>
           <Table
-            pagination={{ defaultCurrent: 1, defaultPageSize: 9, total: trailers.count }}
+            pagination={{
+              defaultCurrent: 1,
+              defaultPageSize: 9,
+              total: trailers.count,
+            }}
             components={{
               body: {
-                cell: EditableCell
-              }
+                cell: EditableCell,
+              },
             }}
             scroll={{ x: '100vw' }}
             columns={mergedColumns}
@@ -242,7 +270,9 @@ export default function Trailers() {
             subTitle={error.description}
             extra={
               // eslint-disable-next-line no-restricted-globals
-              <Button onClick={() => location.reload()}>Refresh the page</Button>
+              <Button onClick={() => location.reload()}>
+                Refresh the page
+              </Button>
             }
           />
         )

@@ -158,13 +158,29 @@ export default function AddDriver() {
     setSelectedCompany(value);
   };
 
-  const filteredTrailers = trailers.filter((trailer) =>
-    selectedCompany ? trailer.companyId === selectedCompany : true
-  );
+  const filteredTrailers = trailers.filter((trailer) => {
+    if (!selectedCompany) {
+      return false;
+    } else if (!trailer.Company) {
+      return false;
+    } else if (trailer.Company.id !== selectedCompany) {
+      return false;
+    } else {
+      return true;
+    }
+  });
 
-  const filteredTrucks = trucks.filter((truck) =>
-    selectedCompany ? truck.companyId === selectedCompany : true
-  );
+  const filteredTrucks = trucks.filter((truck) => {
+    if (!selectedCompany) {
+      return false;
+    } else if (!truck.Company) {
+      return false;
+    } else if (truck.Company.id !== selectedCompany) {
+      return false;
+    } else {
+      return true;
+    }
+  });
 
   return (
     <div>
@@ -264,6 +280,22 @@ export default function AddDriver() {
               />
             </Form.Item>
 
+            <Form.Item name="companies" label="Companies">
+              <Select
+                placeholder="Select a company"
+                onChange={onCompanyChange}
+                allowClear
+              >
+                {companies.map((company) => {
+                  return (
+                    <Select.Option key={company.id} value={company.id}>
+                      {company.name}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+
             <Form.Item name="trailer" label="Trailer">
               <Select
                 placeholder="Select a trailer"
@@ -290,22 +322,6 @@ export default function AddDriver() {
                   return (
                     <Select.Option key={truck.id} value={truck.id}>
                       {truck.name}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
-
-            <Form.Item name="companies" label="Companies">
-              <Select
-                placeholder="Select a company"
-                onChange={onCompanyChange}
-                allowClear
-              >
-                {companies.map((company) => {
-                  return (
-                    <Select.Option key={company.id} value={company.id}>
-                      {company.name}
                     </Select.Option>
                   );
                 })}

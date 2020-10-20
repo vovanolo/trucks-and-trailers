@@ -77,7 +77,6 @@ export default function UsersTable() {
   async function updateUser(key) {
     try {
       const row = await form.validateFields();
-      console.log(row);
       const rowWithId = {
         ...row,
         id: key,
@@ -108,6 +107,7 @@ export default function UsersTable() {
       if (mounted) {
         setIsRequestPending(false);
         setError(getFormattedError(error));
+        console.dir(error);
       }
     }
   }
@@ -168,13 +168,6 @@ export default function UsersTable() {
       key: 'username',
       sorter: (a, b) => ('' + a.username).localeCompare(b.username),
       editable: true,
-    },
-    {
-      title: 'Password',
-      dataIndex: 'password',
-      key: 'password',
-      editable: true,
-      render: () => '',
     },
     {
       title: 'Role',

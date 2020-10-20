@@ -77,6 +77,7 @@ export default function Navbar() {
           </Button>
         </Menu.Item>
       )}
+      {user && <Menu.Item>Logged in as {user.user.username}</Menu.Item>}
     </Menu>
   );
 }

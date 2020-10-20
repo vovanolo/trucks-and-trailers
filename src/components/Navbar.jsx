@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Button, Row, Col, Dropdown } from 'antd';
+import { Menu, Button } from 'antd';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { removeUser } from '../actions/users.actions';
 import app from '../express-client';
-import Avatar from 'antd/lib/avatar/avatar';
 
 export default function Navbar() {
   const location = useLocation();
@@ -77,7 +76,6 @@ export default function Navbar() {
           </Button>
         </Menu.Item>
       )}
-      {user && <Menu.Item>Logged in as {user.user.username}</Menu.Item>}
     </Menu>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal } from 'antd';
+import { useSelector } from 'react-redux';
 
 import DayInfoForm from '../components/DayInfoForm';
 
@@ -64,6 +65,8 @@ export default function Board() {
   const [driverId, setDriverId] = useState(null);
   const [date, setDate] = useState(null);
   const [modalData, setModalData] = useState(null);
+
+  const user = useSelector((state) => state.usersReducer);
 
   useEffect(() => {
     const todayDate = new Date();
@@ -255,6 +258,10 @@ export default function Board() {
       <Button onClick={handleWeekDecrement}>{'<'}</Button>
       <span style={{ padding: '1rem' }}>Week Number: {week}</span>
       <Button onClick={handleWeekIncrement}>{'>'}</Button>
+
+      <br />
+
+      {user && <p>Logged in as {user.user.username}</p>}
 
       <Table
         columns={columns}
